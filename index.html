@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inspección Termográfica — Tableros Eléctricos</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500&display=swap');
+
+:root {
+  --bg: #080b0f;
+  --surface: #0f1318;
+  --surface2: #161b22;
+  --surface3: #1c2330;
+  --border: #243040;
+  --accent: #f59e0b;
+  --accent-dim: rgba(245,158,11,0.15);
+  --green: #22c55e;
+  --red: #ef4444;
+  --blue: #3b82f6;
+  --text: #dde4ee;
+  --text2: #8898aa;
+  --text3: #4a5a6a;
+  --mono: 'Share Tech Mono', monospace;
+  --display: 'Barlow Condensed', sans-serif;
+  --body: 'Barlow', sans-serif;
+  --radius: 3px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image:
+    linear-gradient(rgba(245,158,11,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,158,11,0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events:none; z-index:0;
+}
+
+/* ── HEADER ─────────────────────────────────────────────── */
+header {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(8,11,15,0.96);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+.hdr {
+  max-width: 1500px; margin: 0 auto;
+  padding: 0 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 58px; gap: 16px;
+}
+.logo { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.logo-hex {
+  width:34px; height:34px;
+  background: var(--accent);
+  clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  display:flex; align-items:center; justify-content:center;
+  font-size:15px; color:#000;
+}
+.logo-words { line-height:1.1; }
+.logo-title {
+  font-family:var(--display); font-weight:900; font-size:17px;
+  letter-spacing:.07em; color:var(--text);
+}
+.logo-sub {
+  font-family:var(--mono); font-size:9px; color:var(--text3);
+  letter-spacing:.18em; text-transform:uppercase;
+}
+.hdr-stats { display:flex; align-items:center; gap:20px; }
+.stat { display:flex; flex-direction:column; align-items:center; gap:1px; }
+.stat-n { font-family:var(--mono); font-size:20px; color:var(--accent); line-height:1; }
+.stat-n.green { color:var(--green); }
+.stat-n.red   { color:var(--red);   }
+.stat-l { font-size:9px; color:var(--text3); letter-spacing:.12em; text-transform:uppercase; }
+.vd { width:1px; height:30px; background:var(--border); }
+.btn-export {
+  background:var(--accent); color:#000; border:none;
+  padding:7px 18px;
+  font-family:var(--display); font-weight:800; font-size:13px;
+  letter-spacing:.1em; text-transform:uppercase; cursor:pointer;
+  clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);
+  transition:all .18s;
+}
+.btn-export:hover { background:#fbbf24; transform:translateY(-1px); }
+
+/* ── LAYOUT ──────────────────────────────────────────────── */
+.layout {
+  max-width: 1500px; margin: 0 auto;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 290px 1fr;
+  gap: 20px;
+  align-items: start;
+  position: relative; z-index: 1;
+}
+
+/* ── SIDEBAR ─────────────────────────────────────────────── */
+.sidebar {
+  position: sticky; top: 78px;
+  height: calc(100vh - 98px);
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: flex; flex-direction: column;
+}
+.sidebar::-webkit-scrollbar { width:3px; }
+.sidebar::-webkit-scrollbar-thumb { background:var(--border); }
+
+.sb-top {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0;
+  background: var(--surface); z-index:2;
+}
+.sb-top-title {
+  font-family:var(--mono); font-size:9px; color:var(--text3);
+  letter-spacing:.18em; text-transform:uppercase; margin-bottom:7px;
+}
+.search {
+  width:100%; background:var(--surface3);
+  border:1px solid var(--border); color:var(--text);
+  padding:5px 9px; font-family:var(--mono); font-size:11px;
+  border-radius:2px; outline:none;
+}
+.search:focus { border-color:var(--accent); }
+.search::placeholder { color:var(--text3); }
+
+.floor-group {}
+.floor-lbl {
+  padding:5px 12px;
+  font-family:var(--mono); font-size:9px;
+  color:var(--accent); letter-spacing:.2em;
+  text-transform:uppercase;
+  background:rgba(245,158,11,0.04);
+  border-bottom:1px solid var(--border);
+  border-top:1px solid var(--border);
+}
+.pi {
+  display:flex; align-items:center; gap:8px;
+  padding:7px 12px; cursor:pointer;
+  border-bottom:1px solid rgba(36,48,64,.4);
+  transition:background .12s;
+  border-left:3px solid transparent;
+}
+.pi:hover { background:var(--surface2); }
+.pi.active { background:rgba(245,158,11,0.08); border-left-color:var(--accent); }
+.pi-num { font-family:var(--mono); font-size:10px; color:var(--text3); min-width:22px; }
+.pi-name { font-family:var(--display); font-size:13px; font-weight:600; color:var(--text); flex:1; line-height:1.2; }
+.pi-dot {
+  width:8px; height:8px; border-radius:50%;
+  border:1px solid var(--border); flex-shrink:0;
+  transition:all .2s;
+}
+.pi-dot.done  { background:var(--green); border-color:var(--green); box-shadow:0 0 6px rgba(34,197,94,.4); }
+.pi-dot.warn  { background:var(--accent); border-color:var(--accent); box-shadow:0 0 6px rgba(245,158,11,.4); }
+.pi-dot.alert { background:var(--red); border-color:var(--red); box-shadow:0 0 6px rgba(239,68,68,.4); }
+
+/* ── FORM AREA ───────────────────────────────────────────── */
+.form-area { display:flex; flex-direction:column; gap:18px; }
+
+/* panel title bar */
+.panel-title-bar {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:16px 20px;
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  border-left:4px solid var(--accent);
+}
+.ptb-left {}
+.ptb-item {
+  font-family:var(--mono); font-size:10px; color:var(--text3);
+  letter-spacing:.15em; text-transform:uppercase;
+}
+.ptb-name {
+  font-family:var(--display); font-weight:900; font-size:26px;
+  letter-spacing:.04em; color:var(--text); line-height:1.1; margin-top:2px;
+}
+.ptb-floor {
+  font-family:var(--mono); font-size:11px; color:var(--accent); margin-top:3px;
+}
+.ptb-right { display:flex; gap:8px; align-items:center; }
+
+.badge {
+  padding:4px 12px;
+  font-family:var(--mono); font-size:11px; font-weight:700;
+  letter-spacing:.1em; text-transform:uppercase; border-radius:2px;
+}
+.badge-pending  { background:rgba(255,255,255,.06); color:var(--text3); border:1px solid var(--border); }
+.badge-complete { background:rgba(34,197,94,.15); color:var(--green); border:1px solid rgba(34,197,94,.3); }
+.badge-warning  { background:rgba(245,158,11,.15); color:var(--accent); border:1px solid rgba(245,158,11,.3); }
+.badge-alert    { background:rgba(239,68,68,.15); color:var(--red); border:1px solid rgba(239,68,68,.3); }
+
+/* section card */
+.card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.card-header {
+  padding:10px 18px;
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:10px;
+  background:var(--surface2);
+}
+.card-icon { font-size:15px; }
+.card-title {
+  font-family:var(--display); font-weight:700; font-size:14px;
+  letter-spacing:.06em; text-transform:uppercase; color:var(--text2);
+}
+.card-body { padding:18px; }
+
+/* ── THERMOGRAPHY ROW ──────────────────────────────────────── */
+.thermo-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* TEMP AMBIENT */
+.field-group { display:flex; flex-direction:column; gap:5px; }
+.field-label {
+  font-family:var(--mono); font-size:10px; color:var(--text3);
+  letter-spacing:.14em; text-transform:uppercase;
+}
+.field-input {
+  background:var(--surface3); border:1px solid var(--border);
+  color:var(--text); padding:8px 12px;
+  font-family:var(--mono); font-size:13px;
+  border-radius:2px; outline:none; width:100%;
+  transition:border-color .15s;
+}
+.field-input:focus { border-color:var(--accent); }
+.field-input::placeholder { color:var(--text3); }
+
+/* TEMP MAX DETECTED */
+.temp-display {
+  display:flex; align-items:baseline; gap:4px;
+  font-family:var(--mono);
+}
+.temp-val { font-size:28px; color:var(--accent); font-weight:bold; }
+.temp-unit { font-size:14px; color:var(--text3); }
+
+/* ── CURRENTS ───────────────────────────────────────────── */
+.currents-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.current-phase {
+  background:var(--surface3);
+  border:1px solid var(--border);
+  border-radius:2px;
+  padding:12px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.current-phase::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:2px;
+}
+.phase-r::before { background:var(--red); }
+.phase-s::before { background:var(--green); }
+.phase-t::before { background:var(--blue); }
+
+.phase-name {
+  font-family:var(--mono); font-size:11px; font-weight:700;
+  letter-spacing:.2em; text-transform:uppercase; margin-bottom:8px;
+}
+.phase-r .phase-name { color:var(--red); }
+.phase-s .phase-name { color:var(--green); }
+.phase-t .phase-name { color:var(--blue); }
+
+.phase-input {
+  background:var(--surface); border:1px solid var(--border);
+  color:var(--text); padding:6px 8px;
+  font-family:var(--mono); font-size:20px; font-weight:700;
+  border-radius:2px; outline:none; width:100%; text-align:center;
+  transition:border-color .15s;
+}
+.phase-r .phase-input:focus { border-color:var(--red); }
+.phase-s .phase-input:focus { border-color:var(--green); }
+.phase-t .phase-input:focus { border-color:var(--blue); }
+.phase-input::placeholder { color:var(--text3); font-size:14px; }
+.phase-unit {
+  font-family:var(--mono); font-size:10px; color:var(--text3);
+  margin-top:5px;
+}
+
+/* ── IMAGE UPLOAD ──────────────────────────────────────── */
+.img-upload-area {
+  border:2px dashed var(--border);
+  border-radius:4px;
+  padding:24px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .2s;
+  position:relative;
+  min-height:140px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.img-upload-area:hover { border-color:var(--accent); background:var(--accent-dim); }
+.img-upload-area.has-img { border-style:solid; border-color:var(--accent); padding:0; overflow:hidden; }
+.upload-icon { font-size:28px; opacity:.4; }
+.upload-hint {
+  font-family:var(--mono); font-size:11px; color:var(--text3);
+  letter-spacing:.1em;
+}
+.upload-hint span { color:var(--accent); }
+.upload-hidden { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; }
+.preview-img { width:100%; max-height:260px; object-fit:contain; display:block; }
+.remove-img {
+  position:absolute; top:6px; right:6px;
+  background:rgba(239,68,68,.85); color:#fff; border:none;
+  width:24px; height:24px; border-radius:50%;
+  font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:background .15s;
+}
+.remove-img:hover { background:var(--red); }
+
+/* ── CHECKS ──────────────────────────────────────────────── */
+.checks-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.check-row {
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--surface3); border:1px solid var(--border);
+  border-radius:2px; padding:10px 14px; gap:10px;
+}
+.check-lbl {
+  font-family:var(--display); font-weight:600; font-size:14px;
+  color:var(--text2); letter-spacing:.04em;
+}
+.toggle-group { display:flex; gap:4px; }
+.tgl {
+  padding:4px 10px; border:1px solid var(--border);
+  background:transparent; color:var(--text3);
+  font-family:var(--mono); font-size:10px; letter-spacing:.1em;
+  cursor:pointer; border-radius:2px; transition:all .15s;
+}
+.tgl:hover { border-color:var(--text2); color:var(--text); }
+.tgl.active-ok  { background:rgba(34,197,94,.2); border-color:var(--green); color:var(--green); }
+.tgl.active-bad { background:rgba(239,68,68,.2); border-color:var(--red); color:var(--red); }
+
+/* ── TEXTAREA ────────────────────────────────────────────── */
+.obs-textarea {
+  width:100%; min-height:100px;
+  background:var(--surface3); border:1px solid var(--border);
+  color:var(--text); padding:12px;
+  font-family:var(--body); font-size:13px; line-height:1.6;
+  border-radius:2px; outline:none; resize:vertical;
+  transition:border-color .15s;
+}
+.obs-textarea:focus { border-color:var(--accent); }
+.obs-textarea::placeholder { color:var(--text3); }
+
+/* ── SAVE / NAV BUTTONS ──────────────────────────────────── */
+.action-bar {
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding-top:4px;
+}
+.nav-btns { display:flex; gap:8px; }
+
+.btn {
+  padding:9px 22px;
+  font-family:var(--display); font-weight:700; font-size:14px;
+  letter-spacing:.08em; text-transform:uppercase;
+  border:1px solid var(--border); border-radius:2px;
+  cursor:pointer; transition:all .18s; white-space:nowrap;
+}
+.btn-prev { background:var(--surface3); color:var(--text2); }
+.btn-prev:hover { border-color:var(--text2); color:var(--text); }
+.btn-next { background:var(--surface3); color:var(--text2); }
+.btn-next:hover { border-color:var(--text2); color:var(--text); }
+.btn-save {
+  background:var(--accent); color:#000; border-color:var(--accent);
+  clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+  padding:9px 28px;
+}
+.btn-save:hover { background:#fbbf24; }
+.btn-clear { background:transparent; color:var(--text3); border-color:var(--border); font-size:12px; padding:7px 14px; }
+.btn-clear:hover { border-color:var(--red); color:var(--red); }
+
+/* toast */
+.toast {
+  position:fixed; bottom:24px; right:24px; z-index:999;
+  background:var(--green); color:#000;
+  padding:10px 20px;
+  font-family:var(--mono); font-size:12px; letter-spacing:.1em;
+  border-radius:2px;
+  transform:translateY(80px); opacity:0;
+  transition:all .3s cubic-bezier(.34,1.56,.64,1);
+}
+.toast.show { transform:translateY(0); opacity:1; }
+.toast.error { background:var(--red); color:#fff; }
+
+/* progress bar */
+.prog-bar {
+  height:2px; background:var(--border);
+  position:relative; overflow:hidden; border-radius:1px; margin-bottom:2px;
+}
+.prog-fill {
+  height:100%; background:linear-gradient(90deg, var(--accent), #fbbf24);
+  transition:width .4s ease;
+  box-shadow:0 0 8px rgba(245,158,11,.5);
+}
+
+/* placeholder when no panel selected */
+.no-selection {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-height:300px; gap:16px; color:var(--text3);
+}
+.no-sel-icon { font-size:48px; opacity:.2; }
+.no-sel-text { font-family:var(--mono); font-size:12px; letter-spacing:.15em; text-transform:uppercase; }
+
+/* scrollbar global */
+::-webkit-scrollbar { width:4px; height:4px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+/* responsive */
+@media (max-width:900px) {
+  .layout { grid-template-columns:1fr; }
+  .sidebar { position:static; height:220px; }
+  .thermo-row { grid-template-columns:1fr; }
+  .checks-grid { grid-template-columns:1fr; }
+  .currents-grid { grid-template-columns:repeat(3,1fr); }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr">
+    <div class="logo">
+      <div class="logo-hex">⚡</div>
+      <div class="logo-words">
+        <div class="logo-title">TERMOGRAFÍA</div>
+        <div class="logo-sub">Inspección · Tableros Eléctricos</div>
+      </div>
+    </div>
+    <div class="hdr-stats">
+      <div class="stat"><span class="stat-n" id="statTotal">73</span><span class="stat-l">Total</span></div>
+      <div class="vd"></div>
+      <div class="stat"><span class="stat-n green" id="statDone">0</span><span class="stat-l">Inspecc.</span></div>
+      <div class="vd"></div>
+      <div class="stat"><span class="stat-n red" id="statAlert">0</span><span class="stat-l">Alertas</span></div>
+      <div class="vd"></div>
+      <div style="display:flex;flex-direction:column;gap:4px;min-width:120px;">
+        <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        <span class="stat-l" id="progPct" style="text-align:center">0% completado</span>
+      </div>
+      <button class="btn-export" onclick="exportCSV()">⬇ Exportar CSV</button>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-top">
+      <div class="sb-top-title">Tableros · 73 unidades</div>
+      <input class="search" type="text" placeholder="Buscar tablero..." id="searchInput" oninput="filterPanels()">
+    </div>
+    <div id="panelList"></div>
+  </aside>
+
+  <!-- FORM AREA -->
+  <div class="form-area" id="formArea">
+    <div class="no-selection">
+      <div class="no-sel-icon">🔌</div>
+      <div class="no-sel-text">Seleccione un tablero para comenzar</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════
+const PANELS = [
+  {id:1,  tag:"TABLERO S.A.",                             floor:"PISO SUBTERRÁNEO"},
+  {id:2,  tag:"TABLERO S.A.1",                            floor:"PISO SUBTERRÁNEO"},
+  {id:3,  tag:"TABLERO S.A.2",                            floor:"PISO SUBTERRÁNEO"},
+  {id:4,  tag:"TABLERO S.A.3",                            floor:"PISO SUBTERRÁNEO"},
+  {id:5,  tag:"TABLERO S.A.4",                            floor:"PISO SUBTERRÁNEO"},
+  {id:6,  tag:"TABLERO S.A.5",                            floor:"PISO SUBTERRÁNEO"},
+  {id:7,  tag:"TABLERO S.A.6",                            floor:"PISO SUBTERRÁNEO"},
+  {id:8,  tag:"TABLERO S.A.7",                            floor:"PISO SUBTERRÁNEO"},
+  {id:9,  tag:"TABLERO S.A.8",                            floor:"PISO SUBTERRÁNEO"},
+  {id:10, tag:"TABLERO S.A.9",                            floor:"PISO SUBTERRÁNEO"},
+  {id:11, tag:"TABLERO S.B.1",                            floor:"PISO SUBTERRÁNEO"},
+  {id:12, tag:"TABLERO S.B.2",                            floor:"PISO SUBTERRÁNEO"},
+  {id:13, tag:"TABLERO S.C",                              floor:"PISO SUBTERRÁNEO"},
+  {id:14, tag:"TABLERO G.1",                              floor:"PISO SUBTERRÁNEO"},
+  {id:15, tag:"TABLERO Z. A",                             floor:"PATIO GENERACIÓN"},
+  {id:16, tag:"TABLERO Z. A. 1",                          floor:"PISO ZÓCALO"},
+  {id:17, tag:"TABLERO Z. A. 2",                          floor:"PISO ZÓCALO"},
+  {id:18, tag:"TABLERO Z. B. L",                          floor:"PISO ZÓCALO"},
+  {id:19, tag:"TABLERO Z. B",                             floor:"PISO ZÓCALO"},
+  {id:20, tag:"TABLERO Z. B. 1",                          floor:"PISO ZÓCALO"},
+  {id:21, tag:"TABLERO Z. C",                             floor:"PISO ZÓCALO"},
+  {id:22, tag:"TABLERO Z. C. 1",                          floor:"PISO ZÓCALO"},
+  {id:23, tag:"TABLERO 1. A.",                            floor:"PRIMER PISO"},
+  {id:24, tag:"TABLERO 1. A. 1",                          floor:"PRIMER PISO"},
+  {id:25, tag:"TABLERO 1. A. 2",                          floor:"PRIMER PISO"},
+  {id:26, tag:"TABLERO 1. A. 3",                          floor:"PRIMER PISO"},
+  {id:27, tag:"TABLERO 1. A. 4",                          floor:"PRIMER PISO"},
+  {id:28, tag:"TABLERO 1. B.",                            floor:"PRIMER PISO"},
+  {id:29, tag:"TABLERO 1. C.",                            floor:"PRIMER PISO"},
+  {id:30, tag:"TABLERO 2. A.",                            floor:"SEGUNDO PISO"},
+  {id:31, tag:"TABLERO 2. A. 1",                          floor:"SEGUNDO PISO"},
+  {id:32, tag:"TABLERO 2. A. 2",                          floor:"SEGUNDO PISO"},
+  {id:33, tag:"TABLERO 2. C.",                            floor:"SEGUNDO PISO"},
+  {id:34, tag:"TABLERO 3. A.",                            floor:"TERCER PISO"},
+  {id:35, tag:"TABLERO 3. A. 1",                          floor:"TERCER PISO"},
+  {id:36, tag:"TABLERO 3. A. 2",                          floor:"TERCER PISO"},
+  {id:37, tag:"TABLERO 3. C.",                            floor:"TERCER PISO"},
+  {id:38, tag:"TABLERO 4. A.",                            floor:"CUARTO PISO"},
+  {id:39, tag:"TABLERO 4. A. 1",                          floor:"CUARTO PISO"},
+  {id:40, tag:"TABLERO 4. A. 2",                          floor:"CUARTO PISO"},
+  {id:41, tag:"TABLERO 4. A. 3",                          floor:"CUARTO PISO"},
+  {id:42, tag:"TABLERO 5. A.",                            floor:"QUINTO PISO"},
+  {id:43, tag:"TABLERO 5. A. 1",                          floor:"QUINTO PISO"},
+  {id:44, tag:"TABLERO 5. A. 2",                          floor:"QUINTO PISO"},
+  {id:45, tag:"TABLERO P1-P2",                            floor:"QUINTO PISO"},
+  {id:46, tag:"TABLERO A. 6.",                            floor:"SEXTO PISO"},
+  {id:47, tag:"TABLERO A. 7.",                            floor:"SÉPTIMO PISO"},
+  {id:48, tag:"TABLERO P",                                floor:"PORTERÍA"},
+  {id:49, tag:"TABLERO SALA DE CALDERAS CL-S.A.1",        floor:"PISO SUBTERRÁNEO"},
+  {id:50, tag:"TABLERO SALA DE CALDERAS CL-S.A.2",        floor:"PISO SUBTERRÁNEO"},
+  {id:51, tag:"TABLERO PISO 1A FAN COIL CL-1. A.1",       floor:"PRIMER PISO"},
+  {id:52, tag:"TABLERO PISO MECÁNICO 2B CL-2. B.1",       floor:"SEGUNDO PISO"},
+  {id:53, tag:"TABLERO PISO MECÁNICO 2B CL-2. B.2",       floor:"SEGUNDO PISO"},
+  {id:54, tag:"TABLERO PISO MECÁNICO 2B CL-2. B.3",       floor:"SEGUNDO PISO"},
+  {id:55, tag:"TABLERO PISO MECÁNICO 2B CL-2. B.4",       floor:"SEGUNDO PISO"},
+  {id:56, tag:"TABLERO PISO MECÁNICO 3C CL-3. C.1",       floor:"TERCER PISO"},
+  {id:57, tag:"TABLERO PISO MECÁNICO 3C CL-3. C.2",       floor:"TERCER PISO"},
+  {id:58, tag:"TABLERO VENTILADORES AISLADOS 3ER PISO",    floor:"TERCER PISO"},
+  {id:59, tag:"TABLERO PISO MECÁNICO 6A CL-6. A.1",       floor:"SEXTO PISO"},
+  {id:60, tag:"TABLERO GENERAL EDIFICIO A",                floor:"PISO SUBTERRÁNEO"},
+  {id:61, tag:"TABLERO GENERAL EDIFICIO B Y C",            floor:"PISO SUBTERRÁNEO"},
+  {id:62, tag:"TABLERO BANCO CONDENSADORES EDIF. A",       floor:"PISO SUBTERRÁNEO"},
+  {id:63, tag:"TABLERO BANCO CONDENSADORES EDIF. B Y C",   floor:"PISO SUBTERRÁNEO"},
+  {id:64, tag:"TABLERO ACOPLADOR GENERAL",                 floor:"PISO SUBTERRÁNEO"},
+  {id:65, tag:"TABLERO SALA CUNA",                         floor:"EXTERIOR — SALA CUNA"},
+  {id:66, tag:"TABLERO CONSEJO DESARROLLO (CODE)",         floor:"EXTERIOR — CONSEJO"},
+  {id:67, tag:"TABLERO CLUB ESCOLAR 1",                    floor:"EXTERIOR — CLUB ESCOLAR"},
+  {id:68, tag:"TABLERO CLUB ESCOLAR 2",                    floor:"CLUB ESCOLAR"},
+  {id:69, tag:"TABLERO RAYOS X",                           floor:"PRIMER PISO"},
+  {id:70, tag:"TABLERO MAMÓGRAFO",                         floor:"PRIMER PISO"},
+  {id:71, tag:"TABLERO ASCENSORES CAMILLEROS",             floor:"SÉPTIMO PISO"},
+  {id:72, tag:"TABLERO ASCENSORES PERSONAS",               floor:"SÉPTIMO PISO"},
+  {id:73, tag:"TABLERO DE BOMBAS DE PETRÓLEO",             floor:"EXTERIOR"},
+];
+
+const LS_KEY = 'termo_inspeccion_v1';
+let records = {};  // id -> record object
+let currentId = null;
+
+// ═══════════════════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════════════════
+function loadAll() {
+  try { records = JSON.parse(localStorage.getItem(LS_KEY)) || {}; }
+  catch(e) { records = {}; }
+}
+function saveAll() {
+  localStorage.setItem(LS_KEY, JSON.stringify(records));
+}
+function getRecord(id) {
+  return records[id] || {
+    tempAmb: '', tempMax: '',
+    ir: '', is: '', it: '',
+    limpieza: '', orden: '',
+    obs: '', img: '', imgName: '',
+    savedAt: null
+  };
+}
+
+// ═══════════════════════════════════════════════════════
+// STATUS
+// ═══════════════════════════════════════════════════════
+function getStatus(id) {
+  const r = records[id];
+  if (!r || !r.savedAt) return 'pending';
+  // alert if any current > 0 and unbalanced >20% or anomaly flagged
+  if (r.limpieza === 'bad' || r.orden === 'bad') return 'alert';
+  const vals = [parseFloat(r.ir), parseFloat(r.is), parseFloat(r.it)].filter(v => !isNaN(v) && v > 0);
+  if (vals.length === 3) {
+    const max = Math.max(...vals), min = Math.min(...vals);
+    if (max > 0 && (max - min) / max > 0.2) return 'warn';
+  }
+  return 'done';
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER SIDEBAR
+// ═══════════════════════════════════════════════════════
+function renderSidebar(filter = '') {
+  const list = document.getElementById('panelList');
+  const fl = filter.toLowerCase();
+  const groups = {};
+  PANELS.forEach(p => {
+    if (fl && !p.tag.toLowerCase().includes(fl) && !p.floor.toLowerCase().includes(fl)) return;
+    if (!groups[p.floor]) groups[p.floor] = [];
+    groups[p.floor].push(p);
+  });
+  list.innerHTML = Object.entries(groups).map(([floor, panels]) => `
+    <div class="floor-group">
+      <div class="floor-lbl">📍 ${floor}</div>
+      ${panels.map(p => {
+        const st = getStatus(p.id);
+        const dotClass = st === 'done' ? 'done' : st === 'warn' ? 'warn' : st === 'alert' ? 'alert' : '';
+        return `<div class="pi ${currentId === p.id ? 'active' : ''}" onclick="selectPanel(${p.id})">
+          <span class="pi-num">${String(p.id).padStart(2,'0')}</span>
+          <span class="pi-name">${p.tag}</span>
+          <span class="pi-dot ${dotClass}"></span>
+        </div>`;
+      }).join('')}
+    </div>
+  `).join('') || '<div style="padding:20px;text-align:center;color:var(--text3);font-family:var(--mono);font-size:11px;">Sin resultados</div>';
+}
+
+// ═══════════════════════════════════════════════════════
+// UPDATE HEADER STATS
+// ═══════════════════════════════════════════════════════
+function updateStats() {
+  let done = 0, alerts = 0;
+  PANELS.forEach(p => {
+    const st = getStatus(p.id);
+    if (st !== 'pending') done++;
+    if (st === 'alert') alerts++;
+  });
+  document.getElementById('statDone').textContent = done;
+  document.getElementById('statAlert').textContent = alerts;
+  const pct = Math.round(done / PANELS.length * 100);
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progPct').textContent = pct + '% completado';
+}
+
+// ═══════════════════════════════════════════════════════
+// SELECT PANEL → RENDER FORM
+// ═══════════════════════════════════════════════════════
+function selectPanel(id) {
+  currentId = id;
+  const panel = PANELS.find(p => p.id === id);
+  const rec = getRecord(id);
+  renderSidebar(document.getElementById('searchInput').value);
+
+  const st = getStatus(id);
+  const badgeCls = st === 'done' ? 'badge-complete' : st === 'warn' ? 'badge-warning' : st === 'alert' ? 'badge-alert' : 'badge-pending';
+  const badgeTxt = st === 'done' ? '✓ Inspeccionado' : st === 'warn' ? '⚠ Revisar' : st === 'alert' ? '✕ Anomalía' : '○ Pendiente';
+
+  const idx = PANELS.findIndex(p => p.id === id);
+  const prevId = idx > 0 ? PANELS[idx-1].id : null;
+  const nextId = idx < PANELS.length-1 ? PANELS[idx+1].id : null;
+
+  document.getElementById('formArea').innerHTML = `
+    <!-- TITLE BAR -->
+    <div class="panel-title-bar">
+      <div class="ptb-left">
+        <div class="ptb-item">ITEM ${String(id).padStart(2,'0')} · ${PANELS.length} TABLEROS</div>
+        <div class="ptb-name">${panel.tag}</div>
+        <div class="ptb-floor">📍 ${panel.floor}</div>
+      </div>
+      <div class="ptb-right">
+        <span class="badge ${badgeCls}">${badgeTxt}</span>
+        ${rec.savedAt ? `<span style="font-family:var(--mono);font-size:10px;color:var(--text3);">⏱ ${new Date(rec.savedAt).toLocaleString('es-CL',{hour12:false})}</span>` : ''}
+      </div>
+    </div>
+
+    <!-- THERMOGRAPHY + TEMP -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🌡️</span>
+        <span class="card-title">Termografía y Temperatura</span>
+      </div>
+      <div class="card-body">
+        <div class="thermo-row">
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div class="field-group">
+              <label class="field-label">Temperatura Ambiente (°C)</label>
+              <input class="field-input" type="number" step="0.1" id="f_tempAmb"
+                placeholder="ej: 22.5" value="${rec.tempAmb}">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Temperatura Máxima Detectada (°C)</label>
+              <input class="field-input" type="number" step="0.1" id="f_tempMax"
+                placeholder="ej: 45.3" value="${rec.tempMax}" oninput="updateTempDisplay()">
+              <div class="temp-display" style="margin-top:6px;">
+                <span class="temp-val" id="tempDispVal">${rec.tempMax || '—'}</span>
+                <span class="temp-unit">${rec.tempMax ? '°C' : ''}</span>
+              </div>
+            </div>
+          </div>
+          <!-- IMAGE UPLOAD -->
+          <div class="field-group" style="flex:1;">
+            <label class="field-label">Imagen Termográfica</label>
+            <div class="img-upload-area ${rec.img ? 'has-img' : ''}" id="imgDrop" onclick="document.getElementById('f_img').click()">
+              ${rec.img
+                ? `<img class="preview-img" src="${rec.img}" alt="termografía">
+                   <button class="remove-img" onclick="event.stopPropagation();removeImg()">✕</button>`
+                : `<div class="upload-icon">📷</div>
+                   <div class="upload-hint">Haga clic o arrastre una imagen<br><span>JPG / PNG / WEBP</span></div>`
+              }
+            </div>
+            <input type="file" id="f_img" class="upload-hidden" accept="image/*" onchange="handleImg(event)">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CURRENTS -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">⚡</span>
+        <span class="card-title">Corrientes por Línea (A)</span>
+      </div>
+      <div class="card-body">
+        <div class="currents-grid">
+          <div class="current-phase phase-r">
+            <div class="phase-name">R</div>
+            <input class="phase-input" type="number" step="0.1" min="0" id="f_ir"
+              placeholder="—" value="${rec.ir}">
+            <div class="phase-unit">AMPERIOS</div>
+          </div>
+          <div class="current-phase phase-s">
+            <div class="phase-name">S</div>
+            <input class="phase-input" type="number" step="0.1" min="0" id="f_is"
+              placeholder="—" value="${rec.is}">
+            <div class="phase-unit">AMPERIOS</div>
+          </div>
+          <div class="current-phase phase-t">
+            <div class="phase-name">T</div>
+            <input class="phase-input" type="number" step="0.1" min="0" id="f_it"
+              placeholder="—" value="${rec.it}">
+            <div class="phase-unit">AMPERIOS</div>
+          </div>
+        </div>
+        <div id="balance-info" style="margin-top:10px;font-family:var(--mono);font-size:11px;color:var(--text3);"></div>
+      </div>
+    </div>
+
+    <!-- CHECKS -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🔍</span>
+        <span class="card-title">Estado del Tablero</span>
+      </div>
+      <div class="card-body">
+        <div class="checks-grid">
+          ${renderCheck('f_limpieza','Limpieza', rec.limpieza)}
+          ${renderCheck('f_orden','Orden / Cableado', rec.orden)}
+        </div>
+      </div>
+    </div>
+
+    <!-- OBSERVATIONS -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">📝</span>
+        <span class="card-title">Observaciones</span>
+      </div>
+      <div class="card-body">
+        <textarea class="obs-textarea" id="f_obs"
+          placeholder="Ingrese observaciones, anomalías detectadas, recomendaciones...">${rec.obs}</textarea>
+      </div>
+    </div>
+
+    <!-- ACTION BAR -->
+    <div class="action-bar">
+      <div class="nav-btns">
+        <button class="btn btn-prev" ${!prevId?'disabled style="opacity:.3;cursor:default;"':''} onclick="selectPanel(${prevId})">← Anterior</button>
+        <button class="btn btn-next" ${!nextId?'disabled style="opacity:.3;cursor:default;"':''} onclick="selectPanel(${nextId})">Siguiente →</button>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-clear" onclick="clearRecord(${id})">🗑 Limpiar</button>
+        <button class="btn btn-save" onclick="saveRecord(${id})">💾 Guardar Registro</button>
+      </div>
+    </div>
+  `;
+
+  // drag and drop
+  const drop = document.getElementById('imgDrop');
+  drop.addEventListener('dragover', e => { e.preventDefault(); drop.style.borderColor='var(--accent)'; });
+  drop.addEventListener('dragleave', () => { drop.style.borderColor=''; });
+  drop.addEventListener('drop', e => { e.preventDefault(); drop.style.borderColor=''; if(e.dataTransfer.files[0]) handleImgFile(e.dataTransfer.files[0]); });
+
+  // live balance
+  ['f_ir','f_is','f_it'].forEach(id => document.getElementById(id).addEventListener('input', updateBalance));
+  updateBalance();
+
+  // scroll to top of form
+  document.getElementById('formArea').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderCheck(id, label, val) {
+  return `<div class="check-row">
+    <span class="check-lbl">${label}</span>
+    <div class="toggle-group">
+      <button class="tgl ${val==='ok'?'active-ok':''}" onclick="setCheck('${id}','ok')">✓ OK</button>
+      <button class="tgl ${val==='bad'?'active-bad':''}" onclick="setCheck('${id}','bad')">✕ MAL</button>
+    </div>
+  </div>`;
+}
+
+function setCheck(fieldId, value) {
+  // find current state
+  const btns = document.querySelectorAll(`#${fieldId}`);
+  // mark active using data attribute on the check-row
+  const row = event.target.closest('.check-row');
+  const tgls = row.querySelectorAll('.tgl');
+  tgls.forEach(t => { t.classList.remove('active-ok','active-bad'); });
+  event.target.classList.add(value === 'ok' ? 'active-ok' : 'active-bad');
+  // store in a temporary data store by DOM
+  row.dataset.value = value;
+  row.dataset.field = fieldId;
+}
+
+function getCheckValue(fieldId) {
+  const row = document.querySelector(`[data-field="${fieldId}"]`);
+  return row ? row.dataset.value || '' : '';
+}
+
+function updateTempDisplay() {
+  const v = document.getElementById('f_tempMax').value;
+  document.getElementById('tempDispVal').textContent = v || '—';
+  document.querySelector('#tempDispVal + .temp-unit').textContent = v ? '°C' : '';
+  // color
+  const num = parseFloat(v);
+  const el = document.getElementById('tempDispVal');
+  if (isNaN(num)) el.style.color = 'var(--accent)';
+  else if (num > 60) el.style.color = 'var(--red)';
+  else if (num > 40) el.style.color = 'var(--accent)';
+  else el.style.color = 'var(--green)';
+}
+
+function updateBalance() {
+  const r = parseFloat(document.getElementById('f_ir')?.value);
+  const s = parseFloat(document.getElementById('f_is')?.value);
+  const t = parseFloat(document.getElementById('f_it')?.value);
+  const info = document.getElementById('balance-info');
+  if (!info) return;
+  const vals = [r, s, t].filter(v => !isNaN(v) && v > 0);
+  if (vals.length === 3) {
+    const max = Math.max(...vals), min = Math.min(...vals), avg = vals.reduce((a,b)=>a+b,0)/3;
+    const imbal = ((max-min)/max*100).toFixed(1);
+    const color = imbal > 20 ? 'var(--red)' : imbal > 10 ? 'var(--accent)' : 'var(--green)';
+    info.innerHTML = `Promedio: <span style="color:var(--text2)">${avg.toFixed(1)} A</span> &nbsp;|&nbsp; Desbalance: <span style="color:${color};font-weight:bold">${imbal}%</span> ${parseFloat(imbal)>20?'⚠ DESBALANCE':''}`;
+  } else {
+    info.innerHTML = '';
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// IMAGE HANDLING
+// ═══════════════════════════════════════════════════════
+function handleImg(e) { if(e.target.files[0]) handleImgFile(e.target.files[0]); }
+function handleImgFile(file) {
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = ev.target.result;
+    const drop = document.getElementById('imgDrop');
+    drop.classList.add('has-img');
+    drop.innerHTML = `<img class="preview-img" src="${img}" alt="termografía">
+      <button class="remove-img" onclick="event.stopPropagation();removeImg()">✕</button>`;
+    // store temporarily
+    drop.dataset.img = img;
+    drop.dataset.imgName = file.name;
+  };
+  reader.readAsDataURL(file);
+}
+function removeImg() {
+  const drop = document.getElementById('imgDrop');
+  drop.classList.remove('has-img');
+  drop.innerHTML = `<div class="upload-icon">📷</div>
+    <div class="upload-hint">Haga clic o arrastre una imagen<br><span>JPG / PNG / WEBP</span></div>`;
+  drop.dataset.img = '';
+  drop.dataset.imgName = '';
+  document.getElementById('f_img').value = '';
+}
+
+// ═══════════════════════════════════════════════════════
+// SAVE / CLEAR
+// ═══════════════════════════════════════════════════════
+function saveRecord(id) {
+  const drop = document.getElementById('imgDrop');
+  const existingRec = records[id] || {};
+  // get img either from drop dataset (new upload) or existing record
+  const img = drop.dataset.img !== undefined ? drop.dataset.img : existingRec.img || '';
+  const imgName = drop.dataset.imgName !== undefined ? drop.dataset.imgName : existingRec.imgName || '';
+
+  records[id] = {
+    tempAmb:  document.getElementById('f_tempAmb').value,
+    tempMax:  document.getElementById('f_tempMax').value,
+    ir:       document.getElementById('f_ir').value,
+    is:       document.getElementById('f_is').value,
+    it:       document.getElementById('f_it').value,
+    limpieza: getCheckValue('f_limpieza'),
+    orden:    getCheckValue('f_orden'),
+    obs:      document.getElementById('f_obs').value,
+    img:      img,
+    imgName:  imgName,
+    savedAt:  Date.now()
+  };
+  saveAll();
+  updateStats();
+  renderSidebar(document.getElementById('searchInput').value);
+  showToast('✓ Registro guardado correctamente');
+  // refresh badge
+  selectPanel(id);
+}
+
+function clearRecord(id) {
+  if (!confirm('¿Eliminar todos los datos de este tablero?')) return;
+  delete records[id];
+  saveAll();
+  updateStats();
+  selectPanel(id);
+  showToast('🗑 Registro limpiado', true);
+}
+
+// ═══════════════════════════════════════════════════════
+// FILTER
+// ═══════════════════════════════════════════════════════
+function filterPanels() {
+  renderSidebar(document.getElementById('searchInput').value);
+}
+
+// ═══════════════════════════════════════════════════════
+// EXPORT CSV
+// ═══════════════════════════════════════════════════════
+function exportCSV() {
+  const headers = ['Item','Tag','Piso','Temp.Amb(°C)','Temp.Max(°C)','I_R(A)','I_S(A)','I_T(A)','Limpieza','Orden','Observaciones','Imagen','Fecha Inspección'];
+  const rows = PANELS.map(p => {
+    const r = records[p.id] || {};
+    return [
+      p.id, `"${p.tag}"`, `"${p.floor}"`,
+      r.tempAmb||'', r.tempMax||'',
+      r.ir||'', r.is||'', r.it||'',
+      r.limpieza||'', r.orden||'',
+      `"${(r.obs||'').replace(/"/g,'""')}"`,
+      r.imgName||'',
+      r.savedAt ? new Date(r.savedAt).toLocaleString('es-CL') : ''
+    ].join(',');
+  });
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `inspeccion_termografica_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showToast('⬇ CSV exportado');
+}
+
+// ═══════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════
+function showToast(msg, isError=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (isError ? ' error' : '');
+  void t.offsetWidth;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+loadAll();
+renderSidebar();
+updateStats();
+</script>
+</body>
+</html>
