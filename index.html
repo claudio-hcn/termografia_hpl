@@ -95,7 +95,7 @@ header { position:sticky; top:0; z-index:200; background:rgba(8,11,15,0.97); bac
 .card { background:var(--surface); border:1px solid var(--border); border-radius:3px; overflow:hidden; }
 .card-hdr { padding:9px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px; background:var(--surface2); }
 .card-icon { font-size:14px; }
-.card-title { font-family:var(--display); font-weight:700; font-size:13px; letter-spacing:.06em; text-transform:uppercase; color:var(--text2); }
+.card-title { font-family:var(--display); font-weight:700; font-size:13px; letter-spacing:.06em; text-transform:uppercase; color:var(--text2); flex:1; }
 .card-body { padding:14px; display:flex; flex-direction:column; gap:12px; }
 
 /* FIELDS */
@@ -126,14 +126,24 @@ header { position:sticky; top:0; z-index:200; background:rgba(8,11,15,0.97); bac
 .phase-unit { font-family:var(--mono); font-size:9px; color:var(--text3); margin-top:4px; }
 .balance-info { font-family:var(--mono); font-size:11px; color:var(--text3); text-align:center; min-height:16px; }
 
-/* IMAGE — key fix: preview area has NO click handler. Only the button triggers the picker */
-.img-preview-box { border:1px solid var(--border); border-radius:3px; background:var(--surface3); min-height:80px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
-.img-preview-box.empty { border-style:dashed; }
-.img-empty-txt { text-align:center; color:var(--text3); font-family:var(--mono); font-size:10px; letter-spacing:.1em; padding:20px; }
-.preview-img { width:100%; max-height:220px; object-fit:contain; display:block; }
-.btn-remove-img { position:absolute; top:6px; right:6px; background:rgba(239,68,68,.9); color:#fff; border:none; width:28px; height:28px; border-radius:50%; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:5; }
-.btn-upload { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:12px; background:var(--surface3); border:1px solid var(--border); color:var(--text2); border-radius:3px; cursor:pointer; font-family:var(--display); font-weight:700; font-size:15px; letter-spacing:.06em; text-transform:uppercase; transition:all .15s; }
-.btn-upload:active { border-color:var(--accent); color:var(--accent); }
+/* IMAGE GALLERY */
+.img-gallery { display:flex; flex-direction:column; gap:10px; }
+.img-card { background:var(--surface3); border:1px solid var(--border); border-radius:3px; overflow:hidden; }
+.img-card-top { position:relative; }
+.img-card-top img { width:100%; max-height:220px; object-fit:contain; display:block; background:var(--bg); }
+.img-num-badge { position:absolute; top:8px; left:8px; background:rgba(0,0,0,.7); color:var(--accent); font-family:var(--mono); font-size:10px; padding:2px 7px; border-radius:2px; }
+.img-remove-btn { position:absolute; top:8px; right:8px; background:rgba(239,68,68,.9); color:#fff; border:none; width:28px; height:28px; border-radius:50%; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.img-desc-wrap { border-top:1px solid var(--border); display:flex; align-items:center; gap:0; }
+.img-desc-icon { padding:0 10px; color:var(--text3); font-size:13px; flex-shrink:0; }
+.img-desc-inp { flex:1; background:transparent; border:none; color:var(--text); font-family:var(--body); font-size:14px; padding:9px 8px 9px 0; outline:none; }
+.img-desc-inp::placeholder { color:var(--text3); }
+.img-desc-inp:focus { border-bottom:1px solid var(--accent); margin-bottom:-1px; }
+.img-empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:28px; color:var(--text3); border:1px dashed var(--border); border-radius:3px; }
+.img-empty-icon { font-size:26px; opacity:.3; }
+.img-empty-txt { font-family:var(--mono); font-size:10px; letter-spacing:.12em; }
+.btn-add-img { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:12px; background:transparent; border:1px dashed var(--border); color:var(--text2); border-radius:3px; cursor:pointer; font-family:var(--display); font-weight:700; font-size:15px; letter-spacing:.06em; text-transform:uppercase; transition:all .15s; }
+.btn-add-img:active { border-color:var(--accent); color:var(--accent); border-style:solid; }
+.img-count-badge { font-family:var(--mono); font-size:10px; color:var(--text3); }
 
 /* CHECKS */
 .check-row { display:flex; align-items:center; justify-content:space-between; background:var(--surface3); border:1px solid var(--border); border-radius:3px; padding:11px 12px; gap:10px; }
@@ -184,7 +194,6 @@ header { position:sticky; top:0; z-index:200; background:rgba(8,11,15,0.97); bac
   .d-prog { display:flex; flex-direction:column; align-items:center; gap:3px; }
   .d-prog-bar { width:110px; height:3px; background:var(--border); border-radius:2px; overflow:hidden; }
   .thermo-2col { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  /* hide mobile-only right side */
   .mobile-only { display:none !important; }
 }
 @media(max-width:699px) {
@@ -202,7 +211,6 @@ header { position:sticky; top:0; z-index:200; background:rgba(8,11,15,0.97); bac
       <div class="logo-hex">⚡</div>
       <div class="logo-title">TERMOGRAFÍA</div>
     </div>
-    <!-- mobile right -->
     <div class="hdr-right mobile-only">
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
         <div class="prog-bar"><div class="prog-fill" id="mProgFill" style="width:0%"></div></div>
@@ -210,7 +218,6 @@ header { position:sticky; top:0; z-index:200; background:rgba(8,11,15,0.97); bac
       </div>
       <button class="btn-export" onclick="exportCSV()">⬇ CSV</button>
     </div>
-    <!-- desktop right -->
     <div class="d-hdr-stats" style="display:none;">
       <div class="d-stat"><span class="d-stat-n" id="dStatTotal">73</span><span class="d-stat-l">Total</span></div>
       <div class="vd"></div>
@@ -240,13 +247,13 @@ header { position:sticky; top:0; z-index:200; background:rgba(8,11,15,0.97); bac
   <div class="tab" id="tab-form" onclick="showTab('form')">📝 Formulario</div>
 </div>
 
-<!-- MOBILE: LIST -->
+<!-- MOBILE LIST -->
 <div class="view active" id="view-list">
   <input class="search" type="text" placeholder="Buscar tablero..." id="mSearch" oninput="filterPanels()">
   <div id="mPanelList"></div>
 </div>
 
-<!-- MOBILE: FORM -->
+<!-- MOBILE FORM -->
 <div class="view" id="view-form">
   <div class="form-area" id="mFormArea">
     <div class="no-sel">
@@ -256,7 +263,7 @@ header { position:sticky; top:0; z-index:200; background:rgba(8,11,15,0.97); bac
   </div>
 </div>
 
-<!-- DESKTOP LAYOUT -->
+<!-- DESKTOP -->
 <div class="desktop-wrap" style="display:none;">
   <div class="d-sidebar" style="display:none;">
     <div class="sb-head">
@@ -274,7 +281,6 @@ header { position:sticky; top:0; z-index:200; background:rgba(8,11,15,0.97); bac
 </div>
 
 <div class="toast" id="toast"></div>
-<!-- FILE INPUT: positioned off-screen, triggered only by explicit button click -->
 <input type="file" id="globalImg" accept="image/*"
   style="position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;"
   onchange="handleImgChange(event)">
@@ -282,22 +288,26 @@ header { position:sticky; top:0; z-index:200; background:rgba(8,11,15,0.97); bac
 <script>
 const PANELS=[{id:1,tag:"TABLERO S.A.",floor:"PISO SUBTERRÁNEO"},{id:2,tag:"TABLERO S.A.1",floor:"PISO SUBTERRÁNEO"},{id:3,tag:"TABLERO S.A.2",floor:"PISO SUBTERRÁNEO"},{id:4,tag:"TABLERO S.A.3",floor:"PISO SUBTERRÁNEO"},{id:5,tag:"TABLERO S.A.4",floor:"PISO SUBTERRÁNEO"},{id:6,tag:"TABLERO S.A.5",floor:"PISO SUBTERRÁNEO"},{id:7,tag:"TABLERO S.A.6",floor:"PISO SUBTERRÁNEO"},{id:8,tag:"TABLERO S.A.7",floor:"PISO SUBTERRÁNEO"},{id:9,tag:"TABLERO S.A.8",floor:"PISO SUBTERRÁNEO"},{id:10,tag:"TABLERO S.A.9",floor:"PISO SUBTERRÁNEO"},{id:11,tag:"TABLERO S.B.1",floor:"PISO SUBTERRÁNEO"},{id:12,tag:"TABLERO S.B.2",floor:"PISO SUBTERRÁNEO"},{id:13,tag:"TABLERO S.C",floor:"PISO SUBTERRÁNEO"},{id:14,tag:"TABLERO G.1",floor:"PISO SUBTERRÁNEO"},{id:15,tag:"TABLERO Z. A",floor:"PATIO GENERACIÓN"},{id:16,tag:"TABLERO Z. A. 1",floor:"PISO ZÓCALO"},{id:17,tag:"TABLERO Z. A. 2",floor:"PISO ZÓCALO"},{id:18,tag:"TABLERO Z. B. L",floor:"PISO ZÓCALO"},{id:19,tag:"TABLERO Z. B",floor:"PISO ZÓCALO"},{id:20,tag:"TABLERO Z. B. 1",floor:"PISO ZÓCALO"},{id:21,tag:"TABLERO Z. C",floor:"PISO ZÓCALO"},{id:22,tag:"TABLERO Z. C. 1",floor:"PISO ZÓCALO"},{id:23,tag:"TABLERO 1. A.",floor:"PRIMER PISO"},{id:24,tag:"TABLERO 1. A. 1",floor:"PRIMER PISO"},{id:25,tag:"TABLERO 1. A. 2",floor:"PRIMER PISO"},{id:26,tag:"TABLERO 1. A. 3",floor:"PRIMER PISO"},{id:27,tag:"TABLERO 1. A. 4",floor:"PRIMER PISO"},{id:28,tag:"TABLERO 1. B.",floor:"PRIMER PISO"},{id:29,tag:"TABLERO 1. C.",floor:"PRIMER PISO"},{id:30,tag:"TABLERO 2. A.",floor:"SEGUNDO PISO"},{id:31,tag:"TABLERO 2. A. 1",floor:"SEGUNDO PISO"},{id:32,tag:"TABLERO 2. A. 2",floor:"SEGUNDO PISO"},{id:33,tag:"TABLERO 2. C.",floor:"SEGUNDO PISO"},{id:34,tag:"TABLERO 3. A.",floor:"TERCER PISO"},{id:35,tag:"TABLERO 3. A. 1",floor:"TERCER PISO"},{id:36,tag:"TABLERO 3. A. 2",floor:"TERCER PISO"},{id:37,tag:"TABLERO 3. C.",floor:"TERCER PISO"},{id:38,tag:"TABLERO 4. A.",floor:"CUARTO PISO"},{id:39,tag:"TABLERO 4. A. 1",floor:"CUARTO PISO"},{id:40,tag:"TABLERO 4. A. 2",floor:"CUARTO PISO"},{id:41,tag:"TABLERO 4. A. 3",floor:"CUARTO PISO"},{id:42,tag:"TABLERO 5. A.",floor:"QUINTO PISO"},{id:43,tag:"TABLERO 5. A. 1",floor:"QUINTO PISO"},{id:44,tag:"TABLERO 5. A. 2",floor:"QUINTO PISO"},{id:45,tag:"TABLERO P1-P2",floor:"QUINTO PISO"},{id:46,tag:"TABLERO A. 6.",floor:"SEXTO PISO"},{id:47,tag:"TABLERO A. 7.",floor:"SÉPTIMO PISO"},{id:48,tag:"TABLERO P",floor:"PORTERÍA"},{id:49,tag:"TABLERO SALA DE CALDERAS CL-S.A.1",floor:"PISO SUBTERRÁNEO"},{id:50,tag:"TABLERO SALA DE CALDERAS CL-S.A.2",floor:"PISO SUBTERRÁNEO"},{id:51,tag:"TABLERO PISO 1A FAN COIL CL-1. A.1",floor:"PRIMER PISO"},{id:52,tag:"TABLERO PISO MECÁNICO 2B CL-2. B.1",floor:"SEGUNDO PISO"},{id:53,tag:"TABLERO PISO MECÁNICO 2B CL-2. B.2",floor:"SEGUNDO PISO"},{id:54,tag:"TABLERO PISO MECÁNICO 2B CL-2. B.3",floor:"SEGUNDO PISO"},{id:55,tag:"TABLERO PISO MECÁNICO 2B CL-2. B.4",floor:"SEGUNDO PISO"},{id:56,tag:"TABLERO PISO MECÁNICO 3C CL-3. C.1",floor:"TERCER PISO"},{id:57,tag:"TABLERO PISO MECÁNICO 3C CL-3. C.2",floor:"TERCER PISO"},{id:58,tag:"TABLERO VENTILADORES AISLADOS 3ER PISO",floor:"TERCER PISO"},{id:59,tag:"TABLERO PISO MECÁNICO 6A CL-6. A.1",floor:"SEXTO PISO"},{id:60,tag:"TABLERO GENERAL EDIFICIO A",floor:"PISO SUBTERRÁNEO"},{id:61,tag:"TABLERO GENERAL EDIFICIO B Y C",floor:"PISO SUBTERRÁNEO"},{id:62,tag:"TABLERO BANCO CONDENSADORES EDIF. A",floor:"PISO SUBTERRÁNEO"},{id:63,tag:"TABLERO BANCO CONDENSADORES EDIF. B Y C",floor:"PISO SUBTERRÁNEO"},{id:64,tag:"TABLERO ACOPLADOR GENERAL",floor:"PISO SUBTERRÁNEO"},{id:65,tag:"TABLERO SALA CUNA",floor:"EXTERIOR — SALA CUNA"},{id:66,tag:"TABLERO CONSEJO DESARROLLO (CODE)",floor:"EXTERIOR — CONSEJO"},{id:67,tag:"TABLERO CLUB ESCOLAR 1",floor:"EXTERIOR — CLUB ESCOLAR"},{id:68,tag:"TABLERO CLUB ESCOLAR 2",floor:"CLUB ESCOLAR"},{id:69,tag:"TABLERO RAYOS X",floor:"PRIMER PISO"},{id:70,tag:"TABLERO MAMÓGRAFO",floor:"PRIMER PISO"},{id:71,tag:"TABLERO ASCENSORES CAMILLEROS",floor:"SÉPTIMO PISO"},{id:72,tag:"TABLERO ASCENSORES PERSONAS",floor:"SÉPTIMO PISO"},{id:73,tag:"TABLERO DE BOMBAS DE PETRÓLEO",floor:"EXTERIOR"}];
 
-const LS_KEY='termo_v2';
-let records={}, currentId=null;
+const LS_KEY = 'termo_v3';
+let records = {}, currentId = null;
+let pendingImgs = []; // working copy of images while form is open
 
-function loadAll(){ try{records=JSON.parse(localStorage.getItem(LS_KEY))||{};}catch(e){records={};} }
-function saveAll(){ localStorage.setItem(LS_KEY,JSON.stringify(records)); }
-function getRec(id){ return records[id]||{tempAmb:'',tempMax:'',ir:'',is:'',it:'',limpieza:'',orden:'',obs:'',img:'',imgName:'',savedAt:null}; }
+// ── STORAGE ──────────────────────────────────────────────
+function loadAll(){ try{ records=JSON.parse(localStorage.getItem(LS_KEY))||{}; }catch(e){ records={}; } }
+function saveAll(){ localStorage.setItem(LS_KEY, JSON.stringify(records)); }
+function getRec(id){ return records[id]||{tempAmb:'',tempMax:'',ir:'',is:'',it:'',limpieza:'',orden:'',obs:'',imgs:[],savedAt:null}; }
 
+// ── STATUS ────────────────────────────────────────────────
 function getStatus(id){
   const r=records[id];
   if(!r||!r.savedAt) return 'pending';
   if(r.limpieza==='bad'||r.orden==='bad') return 'alert';
   const v=[parseFloat(r.ir),parseFloat(r.is),parseFloat(r.it)].filter(x=>!isNaN(x)&&x>0);
-  if(v.length===3){const mx=Math.max(...v),mn=Math.min(...v);if(mx>0&&(mx-mn)/mx>0.2)return 'warn';}
+  if(v.length===3){ const mx=Math.max(...v),mn=Math.min(...v); if(mx>0&&(mx-mn)/mx>0.2) return 'warn'; }
   return 'done';
 }
 
+// ── TABS (mobile) ─────────────────────────────────────────
 function showTab(t){
   document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
   document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));
@@ -305,6 +315,7 @@ function showTab(t){
   document.getElementById('view-'+t).classList.add('active');
 }
 
+// ── PANEL LIST ────────────────────────────────────────────
 function renderList(cid, filter=''){
   const el=document.getElementById(cid); if(!el) return;
   const fl=filter.toLowerCase();
@@ -333,18 +344,54 @@ function filterPanels(){
   renderList('dPanelList', document.getElementById('dSearch')?.value||'');
 }
 
+// ── STATS ─────────────────────────────────────────────────
 function updateStats(){
   let done=0,alerts=0;
-  PANELS.forEach(p=>{const s=getStatus(p.id);if(s!=='pending')done++;if(s==='alert')alerts++;});
+  PANELS.forEach(p=>{ const s=getStatus(p.id); if(s!=='pending') done++; if(s==='alert') alerts++; });
   const pct=Math.round(done/PANELS.length*100);
-  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
-  set('mStatTotal',PANELS.length); set('mStatDone',done); set('mStatAlert',alerts);
-  set('dStatTotal',PANELS.length); set('dStatDone',done); set('dStatAlert',alerts);
-  const sp=(id,v)=>{const e=document.getElementById(id);if(e)e.style.width=v+'%';};
-  sp('mProgFill',pct); sp('dProgFill',pct);
-  set('mProgPct',pct+'%'); set('dProgPct',pct+'%');
+  const $=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+  $('mStatTotal',PANELS.length); $('mStatDone',done); $('mStatAlert',alerts);
+  $('dStatTotal',PANELS.length); $('dStatDone',done); $('dStatAlert',alerts);
+  $('mProgPct',pct+'%'); $('dProgPct',pct+'%');
+  ['mProgFill','dProgFill'].forEach(id=>{ const e=document.getElementById(id); if(e) e.style.width=pct+'%'; });
 }
 
+// ── IMAGE GALLERY HTML ────────────────────────────────────
+function buildGalleryHtml(imgs){
+  if(!imgs||!imgs.length){
+    return `<div class="img-empty-state">
+      <span class="img-empty-icon">📷</span>
+      <span class="img-empty-txt">Sin imágenes agregadas</span>
+    </div>`;
+  }
+  return imgs.map((img,i)=>`
+    <div class="img-card">
+      <div class="img-card-top">
+        <img src="${img.src}" alt="img ${i+1}">
+        <span class="img-num-badge">#${i+1}</span>
+        <button class="img-remove-btn" type="button" onclick="removeImg(${i})">✕</button>
+      </div>
+      <div class="img-desc-wrap">
+        <span class="img-desc-icon">✏️</span>
+        <input class="img-desc-inp" type="text" placeholder="Descripción de la imagen..."
+          value="${(img.desc||'').replace(/"/g,'&quot;')}"
+          oninput="updateImgDesc(${i},this.value)">
+      </div>
+    </div>
+  `).join('');
+}
+
+function refreshGalleries(){
+  document.querySelectorAll('.img-gallery').forEach(g=>{
+    g.innerHTML = buildGalleryHtml(pendingImgs);
+  });
+  // update count badge
+  document.querySelectorAll('.img-count-badge').forEach(b=>{
+    b.textContent = pendingImgs.length ? `(${pendingImgs.length})` : '';
+  });
+}
+
+// ── FORM ──────────────────────────────────────────────────
 function buildForm(id){
   const p=PANELS.find(x=>x.id===id);
   const r=getRec(id);
@@ -354,7 +401,8 @@ function buildForm(id){
   const next=idx<PANELS.length-1?PANELS[idx+1].id:null;
   const bc=st==='done'?'badge-complete':st==='warn'?'badge-warning':st==='alert'?'badge-alert':'badge-pending';
   const bt=st==='done'?'✓ Inspeccionado':st==='warn'?'⚠ Revisar':st==='alert'?'✕ Anomalía':'○ Pendiente';
-  const tCol=(v)=>{const n=parseFloat(v);return isNaN(n)||!v?'var(--accent)':n>60?'var(--red)':n>40?'var(--accent)':'var(--green)';};
+  const tCol=v=>{ const n=parseFloat(v); return isNaN(n)||!v?'var(--accent)':n>60?'var(--red)':n>40?'var(--accent)':'var(--green)'; };
+  const imgCount=pendingImgs.length;
 
   return `
   <div class="ptb">
@@ -385,15 +433,15 @@ function buildForm(id){
   </div>
 
   <div class="card">
-    <div class="card-hdr"><span class="card-icon">📷</span><span class="card-title">Imagen Termográfica</span></div>
+    <div class="card-hdr">
+      <span class="card-icon">📷</span>
+      <span class="card-title">Imágenes</span>
+      <span class="img-count-badge">${imgCount?'('+imgCount+')':''}</span>
+    </div>
     <div class="card-body">
-      <div class="img-preview-box ${r.img?'':'empty'}" id="imgBox">
-        ${r.img
-          ?`<img class="preview-img" src="${r.img}" alt="img"><button class="btn-remove-img" type="button" onclick="removeImg()">✕</button>`
-          :`<div class="img-empty-txt">Sin imagen cargada</div>`}
-      </div>
-      <button class="btn-upload" type="button" onclick="triggerImg()">
-        📸 &nbsp;${r.img?'Cambiar imagen':'Cargar imagen termográfica'}
+      <div class="img-gallery">${buildGalleryHtml(pendingImgs)}</div>
+      <button class="btn-add-img" type="button" onclick="triggerImg()">
+        📸 &nbsp;Agregar imagen
       </button>
     </div>
   </div>
@@ -445,8 +493,10 @@ function buildForm(id){
   </div>`;
 }
 
+// ── SELECT PANEL ──────────────────────────────────────────
 function selectPanel(id){
   currentId=id;
+  pendingImgs=[...((getRec(id).imgs)||[])]; // load saved images into working copy
   const html=buildForm(id);
   document.getElementById('mFormArea').innerHTML=html;
   document.getElementById('dFormArea').innerHTML=html;
@@ -458,6 +508,7 @@ function selectPanel(id){
   if(window.innerWidth<700){ showTab('form'); window.scrollTo({top:0,behavior:'smooth'}); }
 }
 
+// ── LIVE UPDATES ──────────────────────────────────────────
 function liveTemp(){
   const v=document.getElementById('f_tempMax')?.value;
   const el=document.getElementById('tempBig'); if(!el) return;
@@ -468,7 +519,7 @@ function liveTemp(){
 }
 
 function liveBalance(){
-  const g=id=>{const e=document.getElementById(id);return e?parseFloat(e.value):NaN;};
+  const g=fid=>{ const e=document.getElementById(fid); return e?parseFloat(e.value):NaN; };
   const rv=g('f_ir'),sv=g('f_is'),tv=g('f_it');
   const info=document.getElementById('balInfo'); if(!info) return;
   const vals=[rv,sv,tv].filter(v=>!isNaN(v)&&v>0);
@@ -480,6 +531,7 @@ function liveBalance(){
   } else info.textContent='';
 }
 
+// ── CHECKS ────────────────────────────────────────────────
 function setCheck(fid,val){
   document.querySelectorAll(`[data-field="${fid}"]`).forEach(row=>{
     row.dataset.value=val;
@@ -489,70 +541,82 @@ function setCheck(fid,val){
     if(val==='bad') tgls[1].classList.add('bad');
   });
 }
-function getCheck(fid){const r=document.querySelector(`[data-field="${fid}"]`);return r?r.dataset.value||'':`${records[currentId]?.[fid]||''}`;}
+function getCheck(fid){ const r=document.querySelector(`[data-field="${fid}"]`); return r?r.dataset.value||'':''; }
 
-// IMAGE — only triggered by explicit button, never by proximity
+// ── IMAGE HANDLING ────────────────────────────────────────
 function triggerImg(){
   const fi=document.getElementById('globalImg');
   fi.value=''; fi.click();
 }
+
 function handleImgChange(e){
   const file=e.target.files[0]; if(!file) return;
   const reader=new FileReader();
   reader.onload=ev=>{
-    const src=ev.target.result;
-    document.querySelectorAll('#imgBox').forEach(box=>{
-      box.classList.remove('empty');
-      box.innerHTML=`<img class="preview-img" src="${src}" alt="img"><button class="btn-remove-img" type="button" onclick="removeImg()">✕</button>`;
-      box.dataset.img=src; box.dataset.imgName=file.name;
-    });
+    pendingImgs.push({ src:ev.target.result, name:file.name, desc:'' });
+    refreshGalleries();
   };
   reader.readAsDataURL(file);
 }
-function removeImg(){
-  document.querySelectorAll('#imgBox').forEach(box=>{
-    box.classList.add('empty');
-    box.innerHTML=`<div class="img-empty-txt">Sin imagen cargada</div>`;
-    box.dataset.img=''; box.dataset.imgName='';
-  });
-  document.getElementById('globalImg').value='';
+
+function removeImg(idx){
+  pendingImgs.splice(idx,1);
+  refreshGalleries();
 }
 
+function updateImgDesc(idx,val){
+  if(pendingImgs[idx]) pendingImgs[idx].desc=val;
+}
+
+// ── SAVE / CLEAR ──────────────────────────────────────────
 function saveRec(id){
-  const box=document.getElementById('imgBox');
-  const ex=records[id]||{};
-  const img=box?.dataset.img!==undefined?box.dataset.img:ex.img||'';
-  const imgName=box?.dataset.imgName!==undefined?box.dataset.imgName:ex.imgName||'';
   records[id]={
-    tempAmb:document.getElementById('f_tempAmb')?.value||'',
-    tempMax:document.getElementById('f_tempMax')?.value||'',
-    ir:document.getElementById('f_ir')?.value||'',
-    is:document.getElementById('f_is')?.value||'',
-    it:document.getElementById('f_it')?.value||'',
+    tempAmb: document.getElementById('f_tempAmb')?.value||'',
+    tempMax: document.getElementById('f_tempMax')?.value||'',
+    ir:      document.getElementById('f_ir')?.value||'',
+    is:      document.getElementById('f_is')?.value||'',
+    it:      document.getElementById('f_it')?.value||'',
     limpieza:getCheck('f_limpieza'),
-    orden:getCheck('f_orden'),
-    obs:document.getElementById('f_obs')?.value||'',
-    img,imgName,savedAt:Date.now()
+    orden:   getCheck('f_orden'),
+    obs:     document.getElementById('f_obs')?.value||'',
+    imgs:    pendingImgs.map(i=>({src:i.src, name:i.name, desc:i.desc||''})),
+    savedAt: Date.now()
   };
   saveAll(); updateStats(); filterPanels();
   showToast('✓ Registro guardado');
+  // re-render to update badge/timestamp
   const html=buildForm(id);
   document.getElementById('mFormArea').innerHTML=html;
   document.getElementById('dFormArea').innerHTML=html;
-  ['f_ir','f_is','f_it'].forEach(fid=>{document.querySelectorAll('#'+fid).forEach(el=>el.addEventListener('input',liveBalance));});
+  ['f_ir','f_is','f_it'].forEach(fid=>{
+    document.querySelectorAll('#'+fid).forEach(el=>el.addEventListener('input',liveBalance));
+  });
   liveBalance();
 }
+
 function clearRec(id){
   if(!confirm('¿Eliminar todos los datos de este tablero?')) return;
-  delete records[id]; saveAll(); updateStats(); selectPanel(id);
+  delete records[id];
+  pendingImgs=[];
+  saveAll(); updateStats(); selectPanel(id);
   showToast('🗑 Registro limpiado',true);
 }
 
+// ── EXPORT CSV ────────────────────────────────────────────
 function exportCSV(){
-  const h=['Item','Tag','Piso','T.Amb(°C)','T.Max(°C)','I_R(A)','I_S(A)','I_T(A)','Limpieza','Orden','Observaciones','Imagen','Fecha'];
+  const h=['Item','Tag','Piso','T.Amb(°C)','T.Max(°C)','I_R(A)','I_S(A)','I_T(A)','Limpieza','Orden','Observaciones','Imágenes','Fecha'];
   const rows=PANELS.map(p=>{
     const r=records[p.id]||{};
-    return [p.id,`"${p.tag}"`,`"${p.floor}"`,r.tempAmb||'',r.tempMax||'',r.ir||'',r.is||'',r.it||'',r.limpieza||'',r.orden||'',`"${(r.obs||'').replace(/"/g,'""')}"`,r.imgName||'',r.savedAt?new Date(r.savedAt).toLocaleString('es-CL'):''].join(',');
+    const imgsList=(r.imgs||[]).map((img,i)=>`IMG${i+1}:${img.name}${img.desc?'('+img.desc+')':''}`).join(' | ');
+    return [
+      p.id, `"${p.tag}"`, `"${p.floor}"`,
+      r.tempAmb||'', r.tempMax||'',
+      r.ir||'', r.is||'', r.it||'',
+      r.limpieza||'', r.orden||'',
+      `"${(r.obs||'').replace(/"/g,'""')}"`,
+      `"${imgsList}"`,
+      r.savedAt?new Date(r.savedAt).toLocaleString('es-CL'):''
+    ].join(',');
   });
   const csv=[h.join(','),...rows].join('\n');
   const a=document.createElement('a');
@@ -561,6 +625,7 @@ function exportCSV(){
   a.click(); showToast('⬇ CSV exportado');
 }
 
+// ── TOAST ─────────────────────────────────────────────────
 function showToast(msg,isErr=false){
   const t=document.getElementById('toast');
   t.textContent=msg; t.className='toast'+(isErr?' err':'');
@@ -568,6 +633,7 @@ function showToast(msg,isErr=false){
   setTimeout(()=>t.classList.remove('show'),2500);
 }
 
+// ── INIT ──────────────────────────────────────────────────
 loadAll(); filterPanels(); updateStats();
 </script>
 </body>
