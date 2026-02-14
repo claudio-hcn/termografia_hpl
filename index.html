@@ -96,7 +96,7 @@ header { position:sticky; top:0; z-index:200; background:rgba(8,11,15,0.97); bac
 .card-hdr { padding:9px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px; background:var(--surface2); }
 .card-icon { font-size:14px; }
 .card-title { font-family:var(--display); font-weight:700; font-size:13px; letter-spacing:.06em; text-transform:uppercase; color:var(--text2); flex:1; }
-.card-body { padding:14px; display:flex; flex-direction:column; gap:12px; }
+.card-body { padding:14px; display:flex; flex-direction:column; gap:10px; }
 
 /* FIELDS */
 .field { display:flex; flex-direction:column; gap:5px; }
@@ -126,24 +126,81 @@ header { position:sticky; top:0; z-index:200; background:rgba(8,11,15,0.97); bac
 .phase-unit { font-family:var(--mono); font-size:9px; color:var(--text3); margin-top:4px; }
 .balance-info { font-family:var(--mono); font-size:11px; color:var(--text3); text-align:center; min-height:16px; }
 
-/* IMAGE GALLERY */
-.img-gallery { display:flex; flex-direction:column; gap:10px; }
-.img-card { background:var(--surface3); border:1px solid var(--border); border-radius:3px; overflow:hidden; }
-.img-card-top { position:relative; }
-.img-card-top img { width:100%; max-height:220px; object-fit:contain; display:block; background:var(--bg); }
-.img-num-badge { position:absolute; top:8px; left:8px; background:rgba(0,0,0,.7); color:var(--accent); font-family:var(--mono); font-size:10px; padding:2px 7px; border-radius:2px; }
-.img-remove-btn { position:absolute; top:8px; right:8px; background:rgba(239,68,68,.9); color:#fff; border:none; width:28px; height:28px; border-radius:50%; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-.img-desc-wrap { border-top:1px solid var(--border); display:flex; align-items:center; gap:0; }
-.img-desc-icon { padding:0 10px; color:var(--text3); font-size:13px; flex-shrink:0; }
-.img-desc-inp { flex:1; background:transparent; border:none; color:var(--text); font-family:var(--body); font-size:14px; padding:9px 8px 9px 0; outline:none; }
-.img-desc-inp::placeholder { color:var(--text3); }
-.img-desc-inp:focus { border-bottom:1px solid var(--accent); margin-bottom:-1px; }
-.img-empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:28px; color:var(--text3); border:1px dashed var(--border); border-radius:3px; }
-.img-empty-icon { font-size:26px; opacity:.3; }
-.img-empty-txt { font-family:var(--mono); font-size:10px; letter-spacing:.12em; }
-.btn-add-img { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:12px; background:transparent; border:1px dashed var(--border); color:var(--text2); border-radius:3px; cursor:pointer; font-family:var(--display); font-weight:700; font-size:15px; letter-spacing:.06em; text-transform:uppercase; transition:all .15s; }
-.btn-add-img:active { border-color:var(--accent); color:var(--accent); border-style:solid; }
+/* ── IMAGE GALLERY ── */
+.img-gallery { display:flex; flex-direction:column; gap:8px; }
 .img-count-badge { font-family:var(--mono); font-size:10px; color:var(--text3); }
+
+/* Cada item de imagen */
+.img-item {
+  background:var(--surface3); border:1px solid var(--border); border-radius:3px; overflow:hidden;
+}
+/* Item marcado como hallazgo: borde rojo izquierdo */
+.img-item.hallazgo { border-left:3px solid var(--red); }
+
+/* Fila superior: nombre de archivo + botones */
+.img-item-row {
+  display:flex; align-items:center; gap:8px; padding:8px 10px;
+}
+.img-item-filename {
+  font-family:var(--mono); font-size:11px; color:var(--text2); flex:1;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+/* Botón hallazgo */
+.btn-hallazgo {
+  flex-shrink:0; padding:4px 9px;
+  border:1px solid var(--border); border-radius:2px;
+  background:transparent; color:var(--text3);
+  font-family:var(--mono); font-size:9px; letter-spacing:.08em;
+  cursor:pointer; transition:all .15s; white-space:nowrap;
+}
+.btn-hallazgo.active {
+  background:rgba(239,68,68,.15); border-color:var(--red); color:var(--red);
+}
+/* Botón quitar */
+.btn-img-remove {
+  flex-shrink:0; background:transparent; border:none;
+  color:var(--text3); font-size:16px; cursor:pointer; padding:2px 4px;
+  line-height:1; transition:color .15s;
+}
+.btn-img-remove:active { color:var(--red); }
+
+/* Vista previa (solo hallazgos) */
+.img-item-preview { position:relative; }
+.img-item-preview img { width:100%; max-height:220px; object-fit:contain; display:block; background:var(--bg); }
+.img-loading {
+  padding:16px; text-align:center;
+  font-family:var(--mono); font-size:10px; color:var(--text3); letter-spacing:.1em;
+}
+
+/* Campo descripción */
+.img-item-desc {
+  display:flex; align-items:center; border-top:1px solid var(--border);
+}
+.img-item-desc-icon { padding:0 10px; color:var(--text3); font-size:12px; flex-shrink:0; }
+.img-item-desc-inp {
+  flex:1; background:transparent; border:none; color:var(--text);
+  font-family:var(--body); font-size:14px; padding:8px 8px 8px 0; outline:none;
+}
+.img-item-desc-inp::placeholder { color:var(--text3); }
+.img-item-desc-inp:focus { border-bottom:1px solid var(--accent); margin-bottom:-1px; }
+
+/* Estado vacío */
+.img-empty-state {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:6px; padding:24px; color:var(--text3);
+  border:1px dashed var(--border); border-radius:3px;
+}
+.img-empty-icon { font-size:24px; opacity:.3; }
+.img-empty-txt { font-family:var(--mono); font-size:10px; letter-spacing:.12em; }
+
+/* Botón agregar imagen */
+.btn-add-img {
+  display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:11px;
+  background:transparent; border:1px dashed var(--border); color:var(--text2); border-radius:3px;
+  cursor:pointer; font-family:var(--display); font-weight:700; font-size:15px;
+  letter-spacing:.06em; text-transform:uppercase; transition:all .15s;
+}
+.btn-add-img:active { border-color:var(--accent); color:var(--accent); border-style:solid; }
 
 /* CHECKS */
 .check-row { display:flex; align-items:center; justify-content:space-between; background:var(--surface3); border:1px solid var(--border); border-radius:3px; padding:11px 12px; gap:10px; }
@@ -204,7 +261,6 @@ header { position:sticky; top:0; z-index:200; background:rgba(8,11,15,0.97); bac
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="hdr">
     <div class="logo">
@@ -234,26 +290,22 @@ header { position:sticky; top:0; z-index:200; background:rgba(8,11,15,0.97); bac
   </div>
 </header>
 
-<!-- MOBILE STATS -->
 <div class="stats-bar">
   <div class="stat-item"><div class="stat-n" id="mStatTotal">73</div><div class="stat-l">Total</div></div>
   <div class="stat-item"><div class="stat-n green" id="mStatDone">0</div><div class="stat-l">Listos</div></div>
   <div class="stat-item"><div class="stat-n red" id="mStatAlert">0</div><div class="stat-l">Alertas</div></div>
 </div>
 
-<!-- MOBILE TABS -->
 <div class="tabs">
   <div class="tab active" id="tab-list" onclick="showTab('list')">📋 Tableros</div>
   <div class="tab" id="tab-form" onclick="showTab('form')">📝 Formulario</div>
 </div>
 
-<!-- MOBILE LIST -->
 <div class="view active" id="view-list">
   <input class="search" type="text" placeholder="Buscar tablero..." id="mSearch" oninput="filterPanels()">
   <div id="mPanelList"></div>
 </div>
 
-<!-- MOBILE FORM -->
 <div class="view" id="view-form">
   <div class="form-area" id="mFormArea">
     <div class="no-sel">
@@ -263,7 +315,6 @@ header { position:sticky; top:0; z-index:200; background:rgba(8,11,15,0.97); bac
   </div>
 </div>
 
-<!-- DESKTOP -->
 <div class="desktop-wrap" style="display:none;">
   <div class="d-sidebar" style="display:none;">
     <div class="sb-head">
@@ -281,6 +332,7 @@ header { position:sticky; top:0; z-index:200; background:rgba(8,11,15,0.97); bac
 </div>
 
 <div class="toast" id="toast"></div>
+<!-- File input off-screen, only triggered by explicit button -->
 <input type="file" id="globalImg" accept="image/*"
   style="position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;"
   onchange="handleImgChange(event)">
@@ -288,9 +340,14 @@ header { position:sticky; top:0; z-index:200; background:rgba(8,11,15,0.97); bac
 <script>
 const PANELS=[{id:1,tag:"TABLERO S.A.",floor:"PISO SUBTERRÁNEO"},{id:2,tag:"TABLERO S.A.1",floor:"PISO SUBTERRÁNEO"},{id:3,tag:"TABLERO S.A.2",floor:"PISO SUBTERRÁNEO"},{id:4,tag:"TABLERO S.A.3",floor:"PISO SUBTERRÁNEO"},{id:5,tag:"TABLERO S.A.4",floor:"PISO SUBTERRÁNEO"},{id:6,tag:"TABLERO S.A.5",floor:"PISO SUBTERRÁNEO"},{id:7,tag:"TABLERO S.A.6",floor:"PISO SUBTERRÁNEO"},{id:8,tag:"TABLERO S.A.7",floor:"PISO SUBTERRÁNEO"},{id:9,tag:"TABLERO S.A.8",floor:"PISO SUBTERRÁNEO"},{id:10,tag:"TABLERO S.A.9",floor:"PISO SUBTERRÁNEO"},{id:11,tag:"TABLERO S.B.1",floor:"PISO SUBTERRÁNEO"},{id:12,tag:"TABLERO S.B.2",floor:"PISO SUBTERRÁNEO"},{id:13,tag:"TABLERO S.C",floor:"PISO SUBTERRÁNEO"},{id:14,tag:"TABLERO G.1",floor:"PISO SUBTERRÁNEO"},{id:15,tag:"TABLERO Z. A",floor:"PATIO GENERACIÓN"},{id:16,tag:"TABLERO Z. A. 1",floor:"PISO ZÓCALO"},{id:17,tag:"TABLERO Z. A. 2",floor:"PISO ZÓCALO"},{id:18,tag:"TABLERO Z. B. L",floor:"PISO ZÓCALO"},{id:19,tag:"TABLERO Z. B",floor:"PISO ZÓCALO"},{id:20,tag:"TABLERO Z. B. 1",floor:"PISO ZÓCALO"},{id:21,tag:"TABLERO Z. C",floor:"PISO ZÓCALO"},{id:22,tag:"TABLERO Z. C. 1",floor:"PISO ZÓCALO"},{id:23,tag:"TABLERO 1. A.",floor:"PRIMER PISO"},{id:24,tag:"TABLERO 1. A. 1",floor:"PRIMER PISO"},{id:25,tag:"TABLERO 1. A. 2",floor:"PRIMER PISO"},{id:26,tag:"TABLERO 1. A. 3",floor:"PRIMER PISO"},{id:27,tag:"TABLERO 1. A. 4",floor:"PRIMER PISO"},{id:28,tag:"TABLERO 1. B.",floor:"PRIMER PISO"},{id:29,tag:"TABLERO 1. C.",floor:"PRIMER PISO"},{id:30,tag:"TABLERO 2. A.",floor:"SEGUNDO PISO"},{id:31,tag:"TABLERO 2. A. 1",floor:"SEGUNDO PISO"},{id:32,tag:"TABLERO 2. A. 2",floor:"SEGUNDO PISO"},{id:33,tag:"TABLERO 2. C.",floor:"SEGUNDO PISO"},{id:34,tag:"TABLERO 3. A.",floor:"TERCER PISO"},{id:35,tag:"TABLERO 3. A. 1",floor:"TERCER PISO"},{id:36,tag:"TABLERO 3. A. 2",floor:"TERCER PISO"},{id:37,tag:"TABLERO 3. C.",floor:"TERCER PISO"},{id:38,tag:"TABLERO 4. A.",floor:"CUARTO PISO"},{id:39,tag:"TABLERO 4. A. 1",floor:"CUARTO PISO"},{id:40,tag:"TABLERO 4. A. 2",floor:"CUARTO PISO"},{id:41,tag:"TABLERO 4. A. 3",floor:"CUARTO PISO"},{id:42,tag:"TABLERO 5. A.",floor:"QUINTO PISO"},{id:43,tag:"TABLERO 5. A. 1",floor:"QUINTO PISO"},{id:44,tag:"TABLERO 5. A. 2",floor:"QUINTO PISO"},{id:45,tag:"TABLERO P1-P2",floor:"QUINTO PISO"},{id:46,tag:"TABLERO A. 6.",floor:"SEXTO PISO"},{id:47,tag:"TABLERO A. 7.",floor:"SÉPTIMO PISO"},{id:48,tag:"TABLERO P",floor:"PORTERÍA"},{id:49,tag:"TABLERO SALA DE CALDERAS CL-S.A.1",floor:"PISO SUBTERRÁNEO"},{id:50,tag:"TABLERO SALA DE CALDERAS CL-S.A.2",floor:"PISO SUBTERRÁNEO"},{id:51,tag:"TABLERO PISO 1A FAN COIL CL-1. A.1",floor:"PRIMER PISO"},{id:52,tag:"TABLERO PISO MECÁNICO 2B CL-2. B.1",floor:"SEGUNDO PISO"},{id:53,tag:"TABLERO PISO MECÁNICO 2B CL-2. B.2",floor:"SEGUNDO PISO"},{id:54,tag:"TABLERO PISO MECÁNICO 2B CL-2. B.3",floor:"SEGUNDO PISO"},{id:55,tag:"TABLERO PISO MECÁNICO 2B CL-2. B.4",floor:"SEGUNDO PISO"},{id:56,tag:"TABLERO PISO MECÁNICO 3C CL-3. C.1",floor:"TERCER PISO"},{id:57,tag:"TABLERO PISO MECÁNICO 3C CL-3. C.2",floor:"TERCER PISO"},{id:58,tag:"TABLERO VENTILADORES AISLADOS 3ER PISO",floor:"TERCER PISO"},{id:59,tag:"TABLERO PISO MECÁNICO 6A CL-6. A.1",floor:"SEXTO PISO"},{id:60,tag:"TABLERO GENERAL EDIFICIO A",floor:"PISO SUBTERRÁNEO"},{id:61,tag:"TABLERO GENERAL EDIFICIO B Y C",floor:"PISO SUBTERRÁNEO"},{id:62,tag:"TABLERO BANCO CONDENSADORES EDIF. A",floor:"PISO SUBTERRÁNEO"},{id:63,tag:"TABLERO BANCO CONDENSADORES EDIF. B Y C",floor:"PISO SUBTERRÁNEO"},{id:64,tag:"TABLERO ACOPLADOR GENERAL",floor:"PISO SUBTERRÁNEO"},{id:65,tag:"TABLERO SALA CUNA",floor:"EXTERIOR — SALA CUNA"},{id:66,tag:"TABLERO CONSEJO DESARROLLO (CODE)",floor:"EXTERIOR — CONSEJO"},{id:67,tag:"TABLERO CLUB ESCOLAR 1",floor:"EXTERIOR — CLUB ESCOLAR"},{id:68,tag:"TABLERO CLUB ESCOLAR 2",floor:"CLUB ESCOLAR"},{id:69,tag:"TABLERO RAYOS X",floor:"PRIMER PISO"},{id:70,tag:"TABLERO MAMÓGRAFO",floor:"PRIMER PISO"},{id:71,tag:"TABLERO ASCENSORES CAMILLEROS",floor:"SÉPTIMO PISO"},{id:72,tag:"TABLERO ASCENSORES PERSONAS",floor:"SÉPTIMO PISO"},{id:73,tag:"TABLERO DE BOMBAS DE PETRÓLEO",floor:"EXTERIOR"}];
 
-const LS_KEY = 'termo_v3';
+const LS_KEY = 'termo_v4';
 let records = {}, currentId = null;
-let pendingImgs = []; // working copy of images while form is open
+let pendingImgs = [];
+// pendingImgs items: { name, desc, hallazgo, src }
+// - name:     nombre del archivo (siempre guardado, texto liviano)
+// - desc:     descripción (texto)
+// - hallazgo: true/false — si es hallazgo, se guarda el src (Base64 comprimido)
+// - src:      Base64 solo si hallazgo=true, '' en caso contrario
 
 // ── STORAGE ──────────────────────────────────────────────
 function loadAll(){ try{ records=JSON.parse(localStorage.getItem(LS_KEY))||{}; }catch(e){ records={}; } }
@@ -307,7 +364,7 @@ function getStatus(id){
   return 'done';
 }
 
-// ── TABS (mobile) ─────────────────────────────────────────
+// ── TABS ──────────────────────────────────────────────────
 function showTab(t){
   document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
   document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));
@@ -346,7 +403,7 @@ function filterPanels(){
 
 // ── STATS ─────────────────────────────────────────────────
 function updateStats(){
-  let done=0,alerts=0;
+  let done=0, alerts=0;
   PANELS.forEach(p=>{ const s=getStatus(p.id); if(s!=='pending') done++; if(s==='alert') alerts++; });
   const pct=Math.round(done/PANELS.length*100);
   const $=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
@@ -361,19 +418,28 @@ function buildGalleryHtml(imgs){
   if(!imgs||!imgs.length){
     return `<div class="img-empty-state">
       <span class="img-empty-icon">📷</span>
-      <span class="img-empty-txt">Sin imágenes agregadas</span>
+      <span class="img-empty-txt">Sin referencias de imágenes</span>
     </div>`;
   }
   return imgs.map((img,i)=>`
-    <div class="img-card">
-      <div class="img-card-top">
-        <img src="${img.src}" alt="img ${i+1}">
-        <span class="img-num-badge">#${i+1}</span>
-        <button class="img-remove-btn" type="button" onclick="removeImg(${i})">✕</button>
+    <div class="img-item${img.hallazgo?' hallazgo':''}">
+      <div class="img-item-row">
+        <span class="img-item-filename">📎 ${img.name}</span>
+        <button class="btn-hallazgo${img.hallazgo?' active':''}" type="button" onclick="toggleHallazgo(${i})">
+          ${img.hallazgo?'⚠ Hallazgo':'⚠ Marcar'}
+        </button>
+        <button class="btn-img-remove" type="button" onclick="removeImg(${i})">×</button>
       </div>
-      <div class="img-desc-wrap">
-        <span class="img-desc-icon">✏️</span>
-        <input class="img-desc-inp" type="text" placeholder="Descripción de la imagen..."
+      ${img.hallazgo
+        ? img.src
+          ? `<div class="img-item-preview"><img src="${img.src}" alt="${img.name}"></div>`
+          : `<div class="img-loading">⏳ Cargando imagen...</div>`
+        : ''
+      }
+      <div class="img-item-desc">
+        <span class="img-item-desc-icon">✏️</span>
+        <input class="img-item-desc-inp" type="text"
+          placeholder="Descripción o referencia..."
           value="${(img.desc||'').replace(/"/g,'&quot;')}"
           oninput="updateImgDesc(${i},this.value)">
       </div>
@@ -382,13 +448,88 @@ function buildGalleryHtml(imgs){
 }
 
 function refreshGalleries(){
-  document.querySelectorAll('.img-gallery').forEach(g=>{
-    g.innerHTML = buildGalleryHtml(pendingImgs);
-  });
-  // update count badge
+  document.querySelectorAll('.img-gallery').forEach(g=> g.innerHTML=buildGalleryHtml(pendingImgs));
   document.querySelectorAll('.img-count-badge').forEach(b=>{
-    b.textContent = pendingImgs.length ? `(${pendingImgs.length})` : '';
+    const total=pendingImgs.length;
+    const hall=pendingImgs.filter(i=>i.hallazgo).length;
+    b.textContent = total ? `(${total}${hall?` · ⚠${hall}`:''})` : '';
   });
+}
+
+// ── COMPRIMIR IMAGEN (solo para hallazgos) ────────────────
+function compressImage(file, callback){
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const img=new Image();
+    img.onload=()=>{
+      const MAX=900;
+      const scale=Math.min(1, MAX/img.width);
+      const canvas=document.createElement('canvas');
+      canvas.width=Math.round(img.width*scale);
+      canvas.height=Math.round(img.height*scale);
+      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+      callback(canvas.toDataURL('image/jpeg', 0.65));
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── TOGGLE HALLAZGO ────────────────────────────────────────
+// Al marcar como hallazgo: carga y comprime la foto desde el dispositivo
+// Al desmarcar: elimina el src (libera memoria), solo queda el nombre
+function toggleHallazgo(idx){
+  const img=pendingImgs[idx]; if(!img) return;
+  if(img.hallazgo){
+    // desmarcar → borrar foto, conservar solo nombre y desc
+    img.hallazgo=false;
+    img.src='';
+    img._file=null;
+    refreshGalleries();
+  } else {
+    // marcar → pedir foto
+    img.hallazgo=true;
+    img.src=''; // mostrar loading mientras carga
+    refreshGalleries();
+    // abrir picker apuntando a este índice
+    window._hallazgoIdx=idx;
+    const fi=document.getElementById('hallazgoImg');
+    fi.value=''; fi.click();
+  }
+}
+
+// ── IMAGE HANDLING ────────────────────────────────────────
+// Agregar referencia (solo nombre, sin foto)
+function triggerImg(){
+  const fi=document.getElementById('globalImg');
+  fi.value=''; fi.click();
+}
+
+function handleImgChange(e){
+  const file=e.target.files[0]; if(!file) return;
+  // Solo guarda nombre. Sin Base64. Costo: ~20 bytes.
+  pendingImgs.push({ name:file.name, desc:'', hallazgo:false, src:'' });
+  refreshGalleries();
+}
+
+// Cargar foto para hallazgo (comprimida)
+function handleHallazgoChange(e){
+  const file=e.target.files[0]; if(!file) return;
+  const idx=window._hallazgoIdx;
+  if(idx===undefined||!pendingImgs[idx]) return;
+  compressImage(file, src=>{
+    pendingImgs[idx].src=src;
+    refreshGalleries();
+  });
+}
+
+function removeImg(idx){
+  pendingImgs.splice(idx,1);
+  refreshGalleries();
+}
+
+function updateImgDesc(idx,val){
+  if(pendingImgs[idx]) pendingImgs[idx].desc=val;
 }
 
 // ── FORM ──────────────────────────────────────────────────
@@ -403,6 +544,7 @@ function buildForm(id){
   const bt=st==='done'?'✓ Inspeccionado':st==='warn'?'⚠ Revisar':st==='alert'?'✕ Anomalía':'○ Pendiente';
   const tCol=v=>{ const n=parseFloat(v); return isNaN(n)||!v?'var(--accent)':n>60?'var(--red)':n>40?'var(--accent)':'var(--green)'; };
   const imgCount=pendingImgs.length;
+  const hallCount=pendingImgs.filter(i=>i.hallazgo).length;
 
   return `
   <div class="ptb">
@@ -436,12 +578,16 @@ function buildForm(id){
     <div class="card-hdr">
       <span class="card-icon">📷</span>
       <span class="card-title">Imágenes</span>
-      <span class="img-count-badge">${imgCount?'('+imgCount+')':''}</span>
+      <span class="img-count-badge">${imgCount?`(${imgCount}${hallCount?` · ⚠${hallCount}`:''})`:''}</span>
     </div>
     <div class="card-body">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.1em;line-height:1.6;">
+        Agrega referencias de tus fotos (nombre del archivo).<br>
+        Marca como <b style="color:var(--red)">⚠ Hallazgo</b> solo las que necesites ver.
+      </div>
       <div class="img-gallery">${buildGalleryHtml(pendingImgs)}</div>
       <button class="btn-add-img" type="button" onclick="triggerImg()">
-        📸 &nbsp;Agregar imagen
+        📎 &nbsp;Agregar referencia de imagen
       </button>
     </div>
   </div>
@@ -496,7 +642,8 @@ function buildForm(id){
 // ── SELECT PANEL ──────────────────────────────────────────
 function selectPanel(id){
   currentId=id;
-  pendingImgs=[...((getRec(id).imgs)||[])]; // load saved images into working copy
+  // Carga copia de trabajo: refs sin hallazgo no tienen src, hallazgos sí
+  pendingImgs=(getRec(id).imgs||[]).map(i=>({...i}));
   const html=buildForm(id);
   document.getElementById('mFormArea').innerHTML=html;
   document.getElementById('dFormArea').innerHTML=html;
@@ -543,31 +690,6 @@ function setCheck(fid,val){
 }
 function getCheck(fid){ const r=document.querySelector(`[data-field="${fid}"]`); return r?r.dataset.value||'':''; }
 
-// ── IMAGE HANDLING ────────────────────────────────────────
-function triggerImg(){
-  const fi=document.getElementById('globalImg');
-  fi.value=''; fi.click();
-}
-
-function handleImgChange(e){
-  const file=e.target.files[0]; if(!file) return;
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    pendingImgs.push({ src:ev.target.result, name:file.name, desc:'' });
-    refreshGalleries();
-  };
-  reader.readAsDataURL(file);
-}
-
-function removeImg(idx){
-  pendingImgs.splice(idx,1);
-  refreshGalleries();
-}
-
-function updateImgDesc(idx,val){
-  if(pendingImgs[idx]) pendingImgs[idx].desc=val;
-}
-
 // ── SAVE / CLEAR ──────────────────────────────────────────
 function saveRec(id){
   records[id]={
@@ -579,12 +701,17 @@ function saveRec(id){
     limpieza:getCheck('f_limpieza'),
     orden:   getCheck('f_orden'),
     obs:     document.getElementById('f_obs')?.value||'',
-    imgs:    pendingImgs.map(i=>({src:i.src, name:i.name, desc:i.desc||''})),
+    // Guardamos: nombre+desc siempre; src solo si es hallazgo
+    imgs: pendingImgs.map(i=>({
+      name: i.name,
+      desc: i.desc||'',
+      hallazgo: i.hallazgo||false,
+      src: i.hallazgo ? (i.src||'') : ''   // <-- costo real solo en hallazgos
+    })),
     savedAt: Date.now()
   };
   saveAll(); updateStats(); filterPanels();
   showToast('✓ Registro guardado');
-  // re-render to update badge/timestamp
   const html=buildForm(id);
   document.getElementById('mFormArea').innerHTML=html;
   document.getElementById('dFormArea').innerHTML=html;
@@ -596,18 +723,22 @@ function saveRec(id){
 
 function clearRec(id){
   if(!confirm('¿Eliminar todos los datos de este tablero?')) return;
-  delete records[id];
-  pendingImgs=[];
+  delete records[id]; pendingImgs=[];
   saveAll(); updateStats(); selectPanel(id);
   showToast('🗑 Registro limpiado',true);
 }
 
 // ── EXPORT CSV ────────────────────────────────────────────
 function exportCSV(){
-  const h=['Item','Tag','Piso','T.Amb(°C)','T.Max(°C)','I_R(A)','I_S(A)','I_T(A)','Limpieza','Orden','Observaciones','Imágenes','Fecha'];
+  const h=['Item','Tag','Piso','T.Amb(°C)','T.Max(°C)','I_R(A)','I_S(A)','I_T(A)','Limpieza','Orden','Observaciones','Imágenes (nombre · desc · hallazgo)','Fecha'];
   const rows=PANELS.map(p=>{
     const r=records[p.id]||{};
-    const imgsList=(r.imgs||[]).map((img,i)=>`IMG${i+1}:${img.name}${img.desc?'('+img.desc+')':''}`).join(' | ');
+    const imgsList=(r.imgs||[]).map(img=>{
+      let s=img.name;
+      if(img.desc) s+=` · ${img.desc}`;
+      if(img.hallazgo) s+=` [HALLAZGO]`;
+      return s;
+    }).join(' | ');
     return [
       p.id, `"${p.tag}"`, `"${p.floor}"`,
       r.tempAmb||'', r.tempMax||'',
@@ -636,5 +767,10 @@ function showToast(msg,isErr=false){
 // ── INIT ──────────────────────────────────────────────────
 loadAll(); filterPanels(); updateStats();
 </script>
+
+<!-- Input para hallazgo (carga foto comprimida) -->
+<input type="file" id="hallazgoImg" accept="image/*"
+  style="position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;"
+  onchange="handleHallazgoChange(event)">
 </body>
 </html>
