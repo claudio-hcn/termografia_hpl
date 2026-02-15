@@ -793,6 +793,13 @@ function showToast(msg,isErr=false){
 }
 
 // ── INIT ──────────────────────────────────────────────────
+function marcarHora(tipo){
+  const now=new Date();
+  const hora=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  const elId=tipo==='inicio'?'horaInicioVal':'horaTerminoVal';
+  document.querySelectorAll('#'+elId).forEach(el=>el.textContent=hora);
+}
+
 loadAll(); filterPanels(); updateStats();
 </script>
 
