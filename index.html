@@ -499,7 +499,7 @@ function toggleHallazgo(idx){
 }
 
 // ── IMAGE HANDLING ────────────────────────────────────────
-// Agregar referencia (solo nombre, sin foto)
+// Agregar referencia: selector de archivo, solo guarda el nombre (sin foto)
 function triggerImg(){
   const fi=document.getElementById('globalImg');
   fi.value=''; fi.click();
@@ -507,7 +507,6 @@ function triggerImg(){
 
 function handleImgChange(e){
   const file=e.target.files[0]; if(!file) return;
-  // Solo guarda nombre. Sin Base64. Costo: ~20 bytes.
   pendingImgs.push({ name:file.name, desc:'', hallazgo:false, src:'' });
   refreshGalleries();
 }
@@ -582,12 +581,12 @@ function buildForm(id){
     </div>
     <div class="card-body">
       <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.1em;line-height:1.6;">
-        Agrega referencias de tus fotos (nombre del archivo).<br>
+        Selecciona la foto — se guarda solo el nombre del archivo.<br>
         Marca como <b style="color:var(--red)">⚠ Hallazgo</b> solo las que necesites ver.
       </div>
       <div class="img-gallery">${buildGalleryHtml(pendingImgs)}</div>
       <button class="btn-add-img" type="button" onclick="triggerImg()">
-        📎 &nbsp;Agregar referencia de imagen
+        📎 &nbsp;Agregar imagen
       </button>
     </div>
   </div>
