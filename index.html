@@ -507,25 +507,11 @@ function triggerImg(){
 
 function handleImgChange(e){
   const file=e.target.files[0]; if(!file) return;
-
-  // En Android/iOS el nombre a veces es genérico. Intentamos leer EXIF
-  // o simplemente usamos file.name y dejamos que el usuario lo edite en el campo desc.
-  let name = file.name;
-
-  // Detectar nombres genéricos de Android (ej: "image0.jpg", "photo.jpg", "img.jpg")
-  // o iOS ("image.jpeg"). En esos casos pedimos confirmación.
-  const isGeneric = /^(image|img|photo|picture|foto)\d*\.(jpe?g|png|heic|webp|gif)$/i.test(name);
-
-  if(isGeneric){
-    // Intentar extraer fecha del lastModified como referencia
-    const d = new Date(file.lastModified);
-    const pad = n => String(n).padStart(2,'0');
-    const suggested = `IMG_${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
-    const corrected = prompt(`El sistema entregó el nombre "${name}".\nNombre sugerido por fecha de la foto:\n\n¿Cómo quieres llamarla?`, suggested);
-    if(corrected === null) return; // canceló
-    name = corrected.trim() || suggested;
-  }
-
+  // Genera nombre basado en la fecha/hora de la foto (lastModified)
+  // Resultado: IMG_20260215_143022 — identificable en la galería de Android
+  const d = new Date(file.lastModified);
+  const pad = n => String(n).padStart(2,'0');
+  const name = `IMG_${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
   pendingImgs.push({ name, desc:'', hallazgo:false, src:'' });
   refreshGalleries();
 }
